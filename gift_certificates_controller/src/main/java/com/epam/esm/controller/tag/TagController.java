@@ -1,11 +1,18 @@
 package com.epam.esm.controller.tag;
 
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.service.TagService;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,21 +28,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/tag")
 public class TagController {
   private static final Logger logger = Logger.getLogger(TagController.class);
-  //private final TagService tagService;
+  private final TagService tagService;
 
-//  @Autowired
-//  public TagController(TagService tagService) {
-//    this.tagService = tagService;
-//  }
+  @Autowired
+  public TagController(TagService tagService) {
+    this.tagService = tagService;
+  }
 
   /**
    * Creates new tag
    * @param tagDto tag to create
    */
-//  @PostMapping
-//  public void create(@RequestBody TagDto tagDto) throws ResourceAlreadyExistExcepton {
-//    tagService.create(tagDto);
-//  }
+  @PostMapping
+  public void create(@RequestBody TagDto tagDto)  { //throws ResourceAlreadyExistExcepton
+    tagService.create(tagDto);
+  }
 
   /**
    * Deletes existing tag
@@ -43,7 +50,7 @@ public class TagController {
    */
   @DeleteMapping(value = "/{id}")
   public void delete(@PathVariable("id") int id) {
-    //tagService.delete(id);
+    tagService.delete(id);
   }
 
   /**
@@ -53,9 +60,8 @@ public class TagController {
    * @return list with founded tags
    */
   @GetMapping
-  public List<Object> find(@RequestParam(required = false, name = "name") String name) { //List<TagDto>
-//    if (Objects.isNull(name)) return tagService.findAll();
-//    else return Collections.singletonList(tagService.find(name));
-    return new ArrayList<>();
+  public List<TagDto> find(@RequestParam(required = false, name = "name") String name) {
+    if (Objects.isNull(name)) return tagService.findAll();
+    else return Collections.singletonList(tagService.find(name));
   }
 }
