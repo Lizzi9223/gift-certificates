@@ -1,5 +1,9 @@
 package com.epam.esm.mappers;
 
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.utils.Mapper;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,41 +31,41 @@ public class TagMapper {
    * @param tag model object to convert
    * @return converted dto object
    */
-//  public TagDto convertToDto(Tag tag) {
-//    TagDto tagDto = modelMapper.map(tag, TagDto.class);
-//    return tagDto;
-//  }
-//
-//  /**
-//   * Converts {@code Tag} list to {@code TagDto} list
-//   *
-//   * @param tags model objects to convert
-//   * @return converted dto objects
-//   */
-//  public List<TagDto> convertToDto(List<Tag> tags) {
-//    List<TagDto> tagDtos = Mapper.convertList(tags, this::convertToDto);
-//    return tagDtos;
-//  }
-//
-//  /**
-//   * Converts {@code TagDto} object to {@code Tag} object
-//   *
-//   * @param tagDto dto object to convert
-//   * @return converted model object
-//   */
-//  public Tag convertToEntity(TagDto tagDto) {
-//    Tag tag = modelMapper.map(tagDto, Tag.class);
-//    return tag;
-//  }
-//
-//  /**
-//   * Converts {@code TagDto} list to {@code Tag} list
-//   *
-//   * @param tagDtos dto objects to convert
-//   * @return converted model objects
-//   */
-//  public List<Tag> convertToEntity(List<TagDto> tagDtos) {
-//    List<Tag> tags = Mapper.convertList(tagDtos, this::convertToEntity);
-//    return tags;
-//  }
+  public TagDto convertToDto(Tag tag) {
+    TagDto tagDto = modelMapper.map(tag, TagDto.class);
+    return tagDto;
+  }
+
+  /**
+   * Converts {@code Tag} list to {@code TagDto} list
+   *
+   * @param tags model objects to convert
+   * @return converted dto objects
+   */
+  public List<TagDto> convertToDto(List<Tag> tags) {
+    List<TagDto> tagDtos = Mapper.convertList(tags, this::convertToDto);
+    return tagDtos;
+  }
+
+  /**
+   * Converts {@code TagDto} object to {@code Tag} object
+   *
+   * @param tagDto dto object to convert
+   * @return converted model object
+   */
+  public Tag convertToEntity(TagDto tagDto) {
+    Tag tag = modelMapper.map(tagDto, Tag.class);
+    return tag;
+  }
+
+  /**
+   * Converts {@code TagDto} list to {@code Tag} list
+   *
+   * @param tagDtos dto objects to convert
+   * @return converted model objects
+   */
+  public List<Tag> convertToEntity(List<TagDto> tagDtos) {
+    List<Tag> tags = Mapper.convertList(tagDtos, this::convertToEntity);
+    return tags;
+  }
 }

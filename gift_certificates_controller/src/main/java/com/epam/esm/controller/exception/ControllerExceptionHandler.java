@@ -1,11 +1,13 @@
 package com.epam.esm.controller.exception;
 
+import com.epam.esm.exception.InvalidSearchParamsException;
+import com.epam.esm.exception.ResourceAlreadyExistExcepton;
+import com.epam.esm.exception.ResourceNotFoundException;
 import javax.validation.ValidationException;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,21 +26,20 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 public class ControllerExceptionHandler {
   private static final Logger logger = Logger.getLogger(ControllerExceptionHandler.class);
 
-  //  @ExceptionHandler({ResourceNotFoundException.class})
-  //  public ExceptionResponse handleResourceNotFoundException(Exception e, WebRequest request) {
-  //    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
-  //  }
-  //
-  //  @ExceptionHandler({ResourceAlreadyExistExcepton.class})
-  //  public ExceptionResponse handleResourceAlreadyExistExcepton(Exception e, WebRequest request) {
-  //    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
-  //  }
-  //
-  //  @ExceptionHandler({InvalidSearchParamsException.class})
-  //  public ExceptionResponse handlerInvalidSearchParamsException(Exception e, WebRequest request)
-  // {
-  //    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
-  //  }
+  @ExceptionHandler({ResourceNotFoundException.class})
+  public ExceptionResponse handleResourceNotFoundException(Exception e, WebRequest request) {
+    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler({ResourceAlreadyExistExcepton.class})
+  public ExceptionResponse handleResourceAlreadyExistExcepton(Exception e, WebRequest request) {
+    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler({InvalidSearchParamsException.class})
+  public ExceptionResponse handlerInvalidSearchParamsException(Exception e, WebRequest request) {
+    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
+  }
 
   @ExceptionHandler({NoHandlerFoundException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -61,7 +62,7 @@ public class ControllerExceptionHandler {
    */
   @ExceptionHandler({NotFound.class})
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public ExceptionResponse handleResourceNotFoundException(Exception e, WebRequest request) {
+  public ExceptionResponse handleNotFoundException(Exception e, WebRequest request) {
     return responseEntityBuilder(e, request, HttpStatus.NOT_FOUND);
   }
 
@@ -110,6 +111,7 @@ public class ControllerExceptionHandler {
   private ExceptionResponse responseEntityBuilder(
       Exception e, WebRequest request, HttpStatus httpStatus) {
     ExceptionResponse exceptionResponse = new ExceptionResponse();
+    e.printStackTrace();
     exceptionResponse.setErrorMessage(e.getMessage());
     String errorCode = String.valueOf(httpStatus.value());
     String CERTIFICATE_CODE = "01";

@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 
 @Entity(name="gift_certificate")
 public class Certificate {
@@ -22,6 +23,7 @@ public class Certificate {
 
   private BigDecimal price;
 
+  @Min(value = 1, message = "Duration cannot be less than 1")
   private int duration;
 
   @Column(name="create_date")
