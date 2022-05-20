@@ -6,7 +6,7 @@ package com.epam.esm.exception;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
-public class ResourceAlreadyExistExcepton extends Exception {
+public class ResourceAlreadyExistExcepton extends RuntimeException {
   public ResourceAlreadyExistExcepton() {}
 
   public ResourceAlreadyExistExcepton(String message) {

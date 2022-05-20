@@ -23,7 +23,6 @@ public class Certificate {
 
   private BigDecimal price;
 
-  @Min(value = 1, message = "Duration cannot be less than 1")
   private int duration;
 
   @Column(name="create_date")

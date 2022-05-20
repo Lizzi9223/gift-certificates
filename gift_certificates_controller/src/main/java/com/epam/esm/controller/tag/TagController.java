@@ -2,7 +2,6 @@ package com.epam.esm.controller.tag;
 
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.TagService;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

@@ -27,16 +27,19 @@ public class ControllerExceptionHandler {
   private static final Logger logger = Logger.getLogger(ControllerExceptionHandler.class);
 
   @ExceptionHandler({ResourceNotFoundException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponse handleResourceNotFoundException(Exception e, WebRequest request) {
     return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler({ResourceAlreadyExistExcepton.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponse handleResourceAlreadyExistExcepton(Exception e, WebRequest request) {
     return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler({InvalidSearchParamsException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponse handlerInvalidSearchParamsException(Exception e, WebRequest request) {
     return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
   }

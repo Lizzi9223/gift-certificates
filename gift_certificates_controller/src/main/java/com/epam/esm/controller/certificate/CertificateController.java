@@ -1,7 +1,6 @@
 package com.epam.esm.controller.certificate;
 
 import com.epam.esm.dto.CertificateDto;
-import com.epam.esm.exception.ResourceAlreadyExistExcepton;
 import com.epam.esm.service.CertificateService;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -39,8 +38,7 @@ public class CertificateController {
    * @param certificateDto certificate to create
    */
   @PostMapping
-  public void create(
-      @RequestBody CertificateDto certificateDto) throws ResourceAlreadyExistExcepton {
+  public void create(@RequestBody CertificateDto certificateDto) {
     certificateService.create(certificateDto);
   }
 
@@ -86,8 +84,7 @@ public class CertificateController {
   }
 
   @GetMapping(value = "/{name}")
-  public CertificateDto findByParams(
-      @PathVariable("name") String name) {
+  public CertificateDto findByParams(@PathVariable("name") String name) {
     return certificateService.find(name);
   }
 }
