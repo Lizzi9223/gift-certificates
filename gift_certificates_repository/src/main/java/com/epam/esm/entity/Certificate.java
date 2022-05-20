@@ -10,8 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
+import org.hibernate.envers.Audited;
 
 @Entity(name="gift_certificate")
+@Audited
 public class Certificate {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

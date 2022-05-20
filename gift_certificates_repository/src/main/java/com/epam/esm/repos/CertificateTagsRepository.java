@@ -7,14 +7,11 @@ import com.epam.esm.exception.ResourceAlreadyExistExcepton;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.repos.metadata.TableField;
 import com.epam.esm.repos.query.CertificateTagSQL;
-import com.epam.esm.repos.query.TagSQL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +24,13 @@ import org.springframework.stereotype.Repository;
 @ComponentScan("com.epam.esm")
 public class CertificateTagsRepository {
   private static final Logger logger = Logger.getLogger(CertificateRepository.class);
-  private final EntityManagerFactory entityManagerFactory;
+  @PersistenceContext private final EntityManager entityManager;
   private final ResourceBundleMessageSource messageSource;
 
   @Autowired
   public CertificateTagsRepository(
-      EntityManagerFactory entityManagerFactory, ResourceBundleMessageSource messageSource) {
-    this.entityManagerFactory = entityManagerFactory;
+      EntityManager entityManager, ResourceBundleMessageSource messageSource) {
+    this.entityManager = entityManager;
     this.messageSource = messageSource;
   }
 
@@ -43,22 +40,26 @@ public class CertificateTagsRepository {
    * @param certificateId certificate's id to add tag to
    * @param tagId id of tag to add to the certificate
    */
-  public void create(CertificateTag certificateTag){
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
+  public void create(CertificateTag certificateTag) {
     try {
       entityManager.getTransaction().begin();
       entityManager.persist(certificateTag);
       entityManager.getTransaction().commit();
-      entityManager.close();
     } catch (PersistenceException e) {
-      entityManager.close();
+      entityManager.getTransaction().rollback();
       logger.error(
-          "Record {certificateId=" + certificateTag.getCertificateTagId().getCertificateId()
-              + ",tagId=" + certificateTag.getCertificateTagId().getTagId() + "} already exists");
+          "Record {certificateId="
+              + certificateTag.getCertificateTagId().getCertificateId()
+              + ",tagId="
+              + certificateTag.getCertificateTagId().getTagId()
+              + "} already exists");
       throw new ResourceAlreadyExistExcepton(
           messageSource.getMessage(
               "message.repository.recordExists",
-              new Object[] {certificateTag.getCertificateTagId().getCertificateId(), certificateTag.getCertificateTagId().getTagId()},
+              new Object[] {
+                certificateTag.getCertificateTagId().getCertificateId(),
+                certificateTag.getCertificateTagId().getTagId()
+              },
               LocaleContextHolder.getLocale()),
           e);
     }
@@ -94,17 +95,18 @@ public class CertificateTagsRepository {
    * @param tagId id of the tag to exclude from the certificate
    */
   public void delete(CertificateTagId certificateTagId) {
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
     CertificateTag certificateTag = entityManager.find(CertificateTag.class, certificateTagId);
     if (Objects.nonNull(certificateTag)) {
       entityManager.getTransaction().begin();
       entityManager.remove(certificateTag);
       entityManager.getTransaction().commit();
-      entityManager.close();
     } else {
-      entityManager.close();
       logger.error(
-          "Certificate {id=" + certificateTagId.getCertificateId() + "}  does not contain tag {id=" + certificateTagId.getTagId() + "}");
+          "Certificate {id="
+              + certificateTagId.getCertificateId()
+              + "}  does not contain tag {id="
+              + certificateTagId.getTagId()
+              + "}");
       throw new ResourceNotFoundException(
           messageSource.getMessage(
               "message.repository.recordNotExists",
@@ -120,13 +122,10 @@ public class CertificateTagsRepository {
    * @return list of founded tags
    */
   public List<Tag> findCertificateTags(int id) {
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
-    List<Tag> tags =
+    return (List<Tag>)
         entityManager
             .createNativeQuery(CertificateTagSQL.FIND_CERTIFICATE_TAGS, Tag.class)
             .setParameter(TableField.ID, id)
             .getResultList();
-    entityManager.close();
-    return tags;
   }
 }

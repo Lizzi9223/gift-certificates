@@ -1,7 +1,8 @@
 package com.epam.esm.config;
 
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import org.hibernate.envers.AuditReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,10 +20,9 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 @Profile("prod")
 public class ProdRepositoryConfig {
   @Bean
-  public EntityManagerFactory getEntityManagerFactory(){
-    return Persistence.createEntityManagerFactory( "gift-certificates" );
+  public EntityManager getEntityManager(){
+    return Persistence.createEntityManagerFactory( "gift-certificates" ).createEntityManager();
   }
-
   @Bean
   public ResourceBundleMessageSource messageSource() {
     ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();

@@ -5,8 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import org.hibernate.envers.Audited;
 
-@Entity(name="tag")
+@Entity(name = "tag")
+@Audited
 public class Tag {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,8 +16,7 @@ public class Tag {
 
   private String name;
 
-  public Tag() {
-  }
+  public Tag() {}
 
   public Tag(int id, String name) {
     this.id = id;
@@ -57,9 +58,6 @@ public class Tag {
 
   @Override
   public String toString() {
-    return "Tag{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        '}';
+    return "Tag{" + "id=" + id + ", name='" + name + '\'' + '}';
   }
 }

@@ -10,8 +10,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,12 @@ import org.springframework.stereotype.Repository;
 @ComponentScan("com.epam.esm")
 public class TagRepository {
   private static final Logger logger = Logger.getLogger(CertificateRepository.class);
-  private final EntityManagerFactory entityManagerFactory;
+  @PersistenceContext private final EntityManager entityManager;
   private final ResourceBundleMessageSource messageSource;
 
   @Autowired
-  public TagRepository(
-      EntityManagerFactory entityManagerFactory, ResourceBundleMessageSource messageSource) {
-    this.entityManagerFactory = entityManagerFactory;
+  public TagRepository(EntityManager entityManager, ResourceBundleMessageSource messageSource) {
+    this.entityManager = entityManager;
     this.messageSource = messageSource;
   }
 
@@ -42,15 +41,13 @@ public class TagRepository {
    * @return id of the created tag
    */
   public int create(Tag tag) {
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
     try {
       entityManager.getTransaction().begin();
       entityManager.persist(tag);
       entityManager.getTransaction().commit();
-      entityManager.close();
       return tag.getId();
     } catch (PersistenceException e) {
-      entityManager.close();
+      entityManager.getTransaction().rollback();
       logger.error("Tag {name='" + tag.getName() + "'} already exists");
       throw new ResourceAlreadyExistExcepton(
           messageSource.getMessage(
@@ -75,7 +72,6 @@ public class TagRepository {
                 ids[index] = create(tags.get(index));
               } catch (ResourceAlreadyExistExcepton e) {
                 ids[index] = find(tags.get(index).getName()).get().getId();
-                logger.warn("Tag {name='" + tags.get(index).getName() + "'} already exists");
               }
             });
     return ids;
@@ -88,15 +84,12 @@ public class TagRepository {
    * @param id id of the tag to delete
    */
   public void delete(int id) {
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
     Tag tag = entityManager.find(Tag.class, id);
     if (Objects.nonNull(tag)) {
       entityManager.getTransaction().begin();
       entityManager.remove(tag);
       entityManager.getTransaction().commit();
-      entityManager.close();
     } else {
-      entityManager.close();
       logger.error("Tag {id=" + id + "} does not exist");
       throw new ResourceNotFoundException(
           messageSource.getMessage(
@@ -114,7 +107,6 @@ public class TagRepository {
    * @return founded tag
    */
   public Optional<Tag> find(String name) {
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
     try {
       Optional<Tag> tag =
           Optional.of(
@@ -122,10 +114,8 @@ public class TagRepository {
                   .createQuery(TagSQL.FIND_BY_NAME, Tag.class)
                   .setParameter(TableField.NAME, name)
                   .getSingleResult());
-      entityManager.close();
       return tag;
     } catch (NoResultException e) {
-      entityManager.close();
       logger.error("Tag {name='" + name + "'} does not exist");
       throw new ResourceNotFoundException(
           messageSource.getMessage(
@@ -141,9 +131,6 @@ public class TagRepository {
    * @return list of all existing tags
    */
   public List<Tag> findAll() {
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
-    List<Tag> tags = entityManager.createQuery(TagSQL.FIND_ALL, Tag.class).getResultList();
-    entityManager.close();
-    return tags;
+    return entityManager.createQuery(TagSQL.FIND_ALL, Tag.class).getResultList();
   }
 }

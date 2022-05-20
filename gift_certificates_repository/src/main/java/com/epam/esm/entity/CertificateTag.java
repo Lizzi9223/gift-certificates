@@ -2,18 +2,16 @@ package com.epam.esm.entity;
 
 import com.epam.esm.entity.key.CertificateTagId;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import org.hibernate.envers.Audited;
 
 @Entity(name = "gift_certificate_has_tag")
+@Audited
 public class CertificateTag {
-  @EmbeddedId
-  private CertificateTagId certificateTagId;
+  @EmbeddedId private CertificateTagId certificateTagId;
 
-  public CertificateTag() {
-  }
+  public CertificateTag() {}
 
   public CertificateTag(CertificateTagId certificateTagId) {
     this.certificateTagId = certificateTagId;
@@ -46,8 +44,6 @@ public class CertificateTag {
 
   @Override
   public String toString() {
-    return "CertificateTag{" +
-        "certificateTagId=" + certificateTagId +
-        '}';
+    return "CertificateTag{" + "certificateTagId=" + certificateTagId + '}';
   }
 }
