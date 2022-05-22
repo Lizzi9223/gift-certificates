@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import org.hibernate.envers.Audited;
 
 @Entity(name = "gift_certificate_has_tag")
-@Audited
 public class CertificateTag {
   @EmbeddedId private CertificateTagId certificateTagId;
 

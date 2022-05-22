@@ -8,21 +8,15 @@ import com.epam.esm.repos.metadata.TableField;
 import com.epam.esm.repos.query.CertificateSQL;
 import com.epam.esm.search.model.SearchCriteria;
 import com.epam.esm.search.validator.SearchCriteriaValidator;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import org.apache.log4j.Logger;
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.exception.AuditException;
-import org.hibernate.envers.query.AuditQuery;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -80,7 +74,7 @@ public class CertificateRepository {
    *
    * @param certificateNew info for update
    */
-  public void update(Certificate certificateNew){
+  public void update(Certificate certificateNew) {
     Certificate certificate = entityManager.find(Certificate.class, certificateNew.getId());
     if (Objects.nonNull(certificate)) {
       try {

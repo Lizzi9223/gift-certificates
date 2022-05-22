@@ -35,10 +35,8 @@ public class CertificateTagsRepository {
   }
 
   /**
-   * Adds tag to certificate
-   *
-   * @param certificateId certificate's id to add tag to
-   * @param tagId id of tag to add to the certificate
+   * Adds tag to certificate   *
+   * @param certificateTag certificateTag to add
    */
   public void create(CertificateTag certificateTag) {
     try {

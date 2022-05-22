@@ -6,7 +6,7 @@
   <persistence-unit name="gift-certificates">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <properties>
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.hbm2ddl.auto" value="none"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1:3306/gift_certificates_ADVANCED"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

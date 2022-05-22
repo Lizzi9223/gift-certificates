@@ -83,6 +83,11 @@ public class CertificateController {
     return certificateService.find(tagName, name, description, sortByDateType, sortByNameType);
   }
 
+  /**
+   * Searches for certificate with provided name
+   * @param name name of the certificate to find
+   * @return founded certificate
+   */
   @GetMapping(value = "/{name}")
   public CertificateDto findByParams(@PathVariable("name") String name) {
     return certificateService.find(name);

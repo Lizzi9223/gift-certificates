@@ -8,12 +8,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.Min;
-import org.hibernate.envers.Audited;
 
-@Entity(name="gift_certificate")
-@Audited
+/**
+ * Certificate entity
+ * @author Lizaveta Yakauleva
+ * @version 1.0
+ */
+@Entity(name = "gift_certificate")
 public class Certificate {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,17 +28,22 @@ public class Certificate {
 
   private int duration;
 
-  @Column(name="create_date")
+  @Column(name = "create_date")
   private LocalDateTime createDate;
 
-  @Column(name="last_update_date")
+  @Column(name = "last_update_date")
   private LocalDateTime lastUpdateDate;
 
-  public Certificate() {
-  }
+  public Certificate() {}
 
-  public Certificate(int id, String name, String description, BigDecimal price, int duration,
-      LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+  public Certificate(
+      int id,
+      String name,
+      String description,
+      BigDecimal price,
+      int duration,
+      LocalDateTime createDate,
+      LocalDateTime lastUpdateDate) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -112,9 +118,12 @@ public class Certificate {
       return false;
     }
     Certificate that = (Certificate) o;
-    return id == that.id && duration == that.duration && Objects.equals(name, that.name)
-        && Objects.equals(description, that.description) && Objects.equals(price,
-        that.price) && Objects.equals(createDate, that.createDate)
+    return id == that.id
+        && duration == that.duration
+        && Objects.equals(name, that.name)
+        && Objects.equals(description, that.description)
+        && Objects.equals(price, that.price)
+        && Objects.equals(createDate, that.createDate)
         && Objects.equals(lastUpdateDate, that.lastUpdateDate);
   }
 
@@ -125,14 +134,23 @@ public class Certificate {
 
   @Override
   public String toString() {
-    return "Certificate{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        ", description='" + description + '\'' +
-        ", price=" + price +
-        ", duration=" + duration +
-        ", createDate=" + createDate +
-        ", lastUpdateDate=" + lastUpdateDate +
-        '}';
+    return "Certificate{"
+        + "id="
+        + id
+        + ", name='"
+        + name
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", price="
+        + price
+        + ", duration="
+        + duration
+        + ", createDate="
+        + createDate
+        + ", lastUpdateDate="
+        + lastUpdateDate
+        + '}';
   }
 }

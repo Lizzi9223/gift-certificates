@@ -5,10 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import org.hibernate.envers.Audited;
 
+/**
+ * Tag entity
+ * @author Lizaveta Yakauleva
+ * @version 1.0
+ */
 @Entity(name = "tag")
-@Audited
 public class Tag {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

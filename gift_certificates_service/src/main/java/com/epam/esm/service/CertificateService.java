@@ -54,7 +54,7 @@ public class CertificateService {
   /**
    * Creates new certificate <br>
    * Validation is provided <br>
-   * If certificateDto containt new tags, they will be created as well
+   * If certificateDto contains new tags, they will be created as well
    *
    * @param certificateDto certificate to create
    */
