@@ -2,7 +2,6 @@ package com.epam.esm.service;
 
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.dto.OrderDto;
-import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Order;
 import com.epam.esm.mappers.CertificateMapper;
 import com.epam.esm.mappers.OrderMapper;
@@ -11,6 +10,8 @@ import com.epam.esm.repos.OrderCertificateRepository;
 import com.epam.esm.repos.OrderRepository;
 import com.epam.esm.validator.DtoValidator;
 import com.epam.esm.validator.group.CreateInfo;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Service layer for order operations
@@ -25,14 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
+@Service
 public class OrderService {
   private static final Logger logger = Logger.getLogger(OrderService.class);
   private final OrderRepository orderRepository;
   private final OrderCertificateRepository orderCertificateRepository;
 
-  private final CertificateRepository certificateRepository;
+  private final CertificateService certificateService;
   private final OrderMapper orderMapper;
-  private final CertificateMapper certificateMapper;
   private final DtoValidator dtoValidator;
 
   @Autowired
@@ -40,14 +42,14 @@ public class OrderService {
       OrderRepository orderRepository,
       OrderCertificateRepository orderCertificateRepository,
       CertificateRepository certificateRepository,
+      CertificateService certificateService,
       OrderMapper orderMapper,
       CertificateMapper certificateMapper,
       DtoValidator dtoValidator) {
     this.orderRepository = orderRepository;
     this.orderCertificateRepository = orderCertificateRepository;
-    this.certificateRepository = certificateRepository;
+    this.certificateService = certificateService;
     this.orderMapper = orderMapper;
-    this.certificateMapper = certificateMapper;
     this.dtoValidator = dtoValidator;
   }
 
@@ -58,29 +60,24 @@ public class OrderService {
    * @param orderDto order to create
    */
   public void create(OrderDto orderDto) {
+    orderDto.setPurchaseDate(LocalDateTime.now());
     dtoValidator.validate(orderDto, CreateInfo.class);
     Order order = orderMapper.convertToEntity(orderDto);
-    int[] certificateIds = getCertificatesIds(orderDto.getCertificates());
     int orderId = orderRepository.create(order);
-    if (certificateIds.length != 0) orderCertificateRepository.create(orderId, certificateIds);
-  }
-
-  /**
-   * @param certificateDtos list of the certificate which id need to find
-   * @return int array containing id of certificates from the provided certificatesDto list
-   */
-  private int[] getCertificatesIds(List<CertificateDto> certificateDtos) {
-    if (Objects.nonNull(certificateDtos)) {
-      List<String> certificateNames = new ArrayList<>();
-      certificateDtos.forEach(certificateDto -> certificateNames.add(certificateDto.getName()));
-      int[] certificateIds = new int[certificateNames.size()];
-      IntStream.range(0, certificateNames.size())
-          .forEach(
-              index ->
-                  certificateIds[index] =
-                      certificateRepository.find(certificateNames.get(index)).get().getId());
-      return certificateIds;
-    } else return null;
+    if (Objects.nonNull(orderDto.getCertificates())) {
+      int[] certificateIds = new int[orderDto.getCertificates().size()];
+      BigDecimal cost = BigDecimal.ZERO;
+      for(int i=0; i<orderDto.getCertificates().size();i++){
+        CertificateDto certificateDto = certificateService
+            .find(orderDto.getCertificates().get(i).getName());
+        certificateIds[i] =certificateDto.getId();
+        cost = cost.add(certificateDto.getPrice());
+        logger.debug("certificateDto.getPrice() = " + certificateDto.getPrice().toString());
+        logger.debug("cost = " + cost.toString());
+      }
+      orderRepository.setCostToOrder(orderId, cost);
+      orderCertificateRepository.create(orderId, certificateIds);
+    }
   }
 
   /**
@@ -104,7 +101,7 @@ public class OrderService {
    * @param userId id of the user whose orders to find
    * @return founded orderDto list
    */
-  public List<OrderDto> find(int userId) {
+  public List<OrderDto> findByUserId(int userId) {
     List<Order> orders = orderRepository.findAllUserOrders(userId);
     List<OrderDto> orderDtos = orderMapper.convertToDto(orders);
     orderDtos.forEach(this::setOrderCertificates);
@@ -129,8 +126,18 @@ public class OrderService {
    * @param orderDto order which certificates to find and attach
    */
   private void setOrderCertificates(OrderDto orderDto) {
-    List<Certificate> certificates =
-        orderCertificateRepository.findOrderCertificates(orderDto.getId());
-    orderDto.setCertificates(certificateMapper.convertToDto(certificates));
+    int[] certificateIds = orderCertificateRepository.getOrderCertificatesIds(orderDto.getId());
+    List<CertificateDto> certificateDtos = new ArrayList<>();
+    IntStream.range(0, certificateIds.length)
+        .forEach(index -> certificateDtos.add(certificateService.findById(certificateIds[index])));
+    orderDto.setCertificates(certificateDtos);
+  }
+
+  public BigDecimal countUserAllOrdersCost(int userId){
+    List<Order> orders = orderRepository.findAllUserOrders(userId);
+    BigDecimal totalCost = BigDecimal.ZERO;
+    for(Order order : orders)
+      totalCost = totalCost.add(order.getPrice());
+    return totalCost;
   }
 }

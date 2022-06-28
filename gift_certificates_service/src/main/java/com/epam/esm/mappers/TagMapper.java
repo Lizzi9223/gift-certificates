@@ -32,8 +32,7 @@ public class TagMapper {
    * @return converted dto object
    */
   public TagDto convertToDto(Tag tag) {
-    TagDto tagDto = modelMapper.map(tag, TagDto.class);
-    return tagDto;
+    return modelMapper.map(tag, TagDto.class);
   }
 
   /**
@@ -43,8 +42,7 @@ public class TagMapper {
    * @return converted dto objects
    */
   public List<TagDto> convertToDto(List<Tag> tags) {
-    List<TagDto> tagDtos = Mapper.convertList(tags, this::convertToDto);
-    return tagDtos;
+    return Mapper.convertList(tags, this::convertToDto);
   }
 
   /**
@@ -54,8 +52,7 @@ public class TagMapper {
    * @return converted model object
    */
   public Tag convertToEntity(TagDto tagDto) {
-    Tag tag = modelMapper.map(tagDto, Tag.class);
-    return tag;
+    return modelMapper.map(tagDto, Tag.class);
   }
 
   /**
@@ -65,7 +62,6 @@ public class TagMapper {
    * @return converted model objects
    */
   public List<Tag> convertToEntity(List<TagDto> tagDtos) {
-    List<Tag> tags = Mapper.convertList(tagDtos, this::convertToEntity);
-    return tags;
+    return Mapper.convertList(tagDtos, this::convertToEntity);
   }
 }

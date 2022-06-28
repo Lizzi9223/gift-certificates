@@ -34,19 +34,8 @@ public class UserController {
    * @return founded user
    */
   @GetMapping(value = "/{name}")
-  public UserDto find(@PathVariable("name") String name) {
+  public UserDto findByName(@PathVariable("name") String name) {
     return userService.find(name);
-  }
-
-  /**
-   * Searches for user with provided id
-   *
-   * @param id id of the user to find
-   * @return founded user
-   */
-  @GetMapping(value = "/{id}")
-  public UserDto find(@PathVariable("id") int id) {
-    return userService.find(id);
   }
 
   /**
@@ -55,7 +44,7 @@ public class UserController {
    * @return list with founded users
    */
   @GetMapping
-  public List<UserDto> find() {
+  public List<UserDto> findAll() {
     return userService.findAll();
   }
 }

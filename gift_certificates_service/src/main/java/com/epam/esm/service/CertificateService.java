@@ -139,4 +139,20 @@ public class CertificateService {
       return certificateDto;
     } else return null;
   }
+
+  /**
+   * Searches for certificate by id
+   *
+   * @param name id of the certificate to find
+   * @return founded certificateDto
+   */
+  public CertificateDto findById(int id) {
+    Optional<Certificate> certificate = certificateRepository.findById(id);
+    if (certificate.isPresent()) {
+      CertificateDto certificateDto = certificateMapper.convertToDto(certificate.get());
+      List<Tag> tags = certificateTagsRepository.findCertificateTags(certificateDto.getId());
+      certificateDto.setTags(tagMapper.convertToDto(tags));
+      return certificateDto;
+    } else return null;
+  }
 }

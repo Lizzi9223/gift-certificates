@@ -11,6 +11,7 @@ import javax.persistence.Id;
 
 /**
  * Order entity
+ *
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
@@ -20,6 +21,7 @@ public class Order {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
+  @Column(name = "users_id")
   private int userId;
 
   @Column(name = "total_cost")

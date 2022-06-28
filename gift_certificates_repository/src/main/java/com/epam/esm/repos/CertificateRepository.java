@@ -157,6 +157,21 @@ public class CertificateRepository {
     }
   }
 
+  public Optional<Certificate> findById(int id) {
+    try {
+      return Optional.of(
+          entityManager.find(Certificate.class, id));
+    } catch (NoResultException e) {
+      logger.error("Certificate {id='" + id + "'} does not exist");
+      throw new ResourceNotFoundException(
+          messageSource.getMessage(
+              "message.repository.certificateIdNotExists",
+              new Object[] {id},
+              LocaleContextHolder.getLocale()),
+          e);
+    }
+  }
+
   /**
    * Searches for certificates by provided params
    *
@@ -167,7 +182,7 @@ public class CertificateRepository {
     if (SearchCriteriaValidator.isValid(searchCriteria)) {
       return (List<Certificate>)
           entityManager
-              .createNativeQuery(CertificateSQL.GET_FIND_QUERY(searchCriteria), Certificate.class)
+              .createQuery(CertificateSQL.GET_FIND_QUERY(searchCriteria), Certificate.class)
               .getResultList();
     } else {
       logger.error("Search certificates parameters are invalid");

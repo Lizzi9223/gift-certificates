@@ -1,11 +1,12 @@
 package com.epam.esm.entity.key;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class OrderCertificateId {
+public class OrderCertificateId implements Serializable {
 
   @Column(name = "orders_id")
   private int orderId;

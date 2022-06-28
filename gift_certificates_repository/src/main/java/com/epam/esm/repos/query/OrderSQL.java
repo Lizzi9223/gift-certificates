@@ -8,5 +8,5 @@ package com.epam.esm.repos.query;
  */
 public class OrderSQL {
   public static final String FIND_ALL = "from orders";
-  public static final String FIND_BY_USER = "from tag where users_id = :id";
+  public static final String FIND_BY_USER = "from orders where users_id = :id";
 }

@@ -8,6 +8,7 @@ import com.epam.esm.repos.metadata.TableField;
 import com.epam.esm.repos.query.OrderCertificateSQL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
@@ -91,11 +92,16 @@ public class OrderCertificateRepository {
    * @param id is of the order that certificates to find
    * @return list of founded certificates
    */
-  public List<Certificate> findOrderCertificates(int id) {
-    return (List<Certificate>)
-        entityManager
-            .createNativeQuery(OrderCertificateSQL.FIND_ORDER_CERTIFICATES, Certificate.class)
-            .setParameter(TableField.ID, id)
-            .getResultList();
+  public int[] getOrderCertificatesIds(int id) {
+    List<Certificate> certificates =
+        (List<Certificate>)
+            entityManager
+                .createNativeQuery(OrderCertificateSQL.FIND_ORDER_CERTIFICATES, Certificate.class)
+                .setParameter(TableField.ID, id)
+                .getResultList();
+    int[] certificateIds = new int[certificates.size()];
+    IntStream.range(0, certificates.size())
+        .forEach(index -> certificateIds[index] = certificates.get(index).getId());
+    return certificateIds;
   }
 }

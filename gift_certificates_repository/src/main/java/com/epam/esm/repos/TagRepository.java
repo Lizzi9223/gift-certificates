@@ -126,6 +126,26 @@ public class TagRepository {
   }
 
   /**
+   * Searches for tag by id <br>
+   * Throws {@code EmptyResultDataAccessException} if tag with provided id does not exist
+   *
+   * @param id id of the tag to find
+   * @return founded tag
+   */
+  public Optional<Tag> findById(int id) {
+    try {
+      return Optional.of(entityManager.find(Tag.class, id));
+    } catch (NoResultException e) {
+      logger.error("Tag {id='" + id + "'} does not exist");
+      throw new ResourceNotFoundException(
+          messageSource.getMessage(
+              "message.repository.tagIdNotExists",
+              new Object[] {id},
+              LocaleContextHolder.getLocale()));
+    }
+  }
+
+  /**
    * Searches for all tags
    *
    * @return list of all existing tags

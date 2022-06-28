@@ -26,7 +26,10 @@ public class TagService {
   private final DtoValidator dtoValidator;
 
   @Autowired
-  public TagService(TagRepository tagRepository, TagMapper tagMapper, DtoValidator dtoValidator) {
+  public TagService(
+      TagRepository tagRepository,
+      TagMapper tagMapper,
+      DtoValidator dtoValidator) {
     this.tagRepository = tagRepository;
     this.tagMapper = tagMapper;
     this.dtoValidator = dtoValidator;
@@ -64,6 +67,17 @@ public class TagService {
    */
   public TagDto find(String name) {
     Optional<Tag> tag = tagRepository.find(name);
+    return tagMapper.convertToDto(tag.get());
+  }
+
+  /**
+   * Searches for tag by id
+   *
+   * @param id id of the tag to find
+   * @return founded tagDto
+   */
+  public TagDto findById(int id) {
+    Optional<Tag> tag = tagRepository.findById(id);
     return tagMapper.convertToDto(tag.get());
   }
 
