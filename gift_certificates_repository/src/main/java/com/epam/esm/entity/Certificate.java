@@ -1,10 +1,12 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.audit.AuditListener;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,7 +17,8 @@ import javax.persistence.Id;
  * @version 1.0
  */
 @Entity(name = "gift_certificate")
-public class Certificate {
+@EntityListeners(AuditListener.class)
+public class Certificate extends BaseEntity{
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
@@ -134,23 +137,14 @@ public class Certificate {
 
   @Override
   public String toString() {
-    return "Certificate{"
-        + "id="
-        + id
-        + ", name='"
-        + name
-        + '\''
-        + ", description='"
-        + description
-        + '\''
-        + ", price="
-        + price
-        + ", duration="
-        + duration
-        + ", createDate="
-        + createDate
-        + ", lastUpdateDate="
-        + lastUpdateDate
-        + '}';
+    return "Certificate{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", description='" + description + '\'' +
+        ", price=" + price +
+        ", duration=" + duration +
+        ", createDate=" + createDate +
+        ", lastUpdateDate=" + lastUpdateDate +
+        '}';
   }
 }

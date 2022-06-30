@@ -11,6 +11,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Certificate DTO
@@ -18,7 +19,7 @@ import javax.validation.constraints.Size;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
-public class CertificateDto {
+public class CertificateDto extends RepresentationModel<CertificateDto>{
   private int id;
 
   @NotBlank(groups = CreateInfo.class, message = "Name should not be blank")

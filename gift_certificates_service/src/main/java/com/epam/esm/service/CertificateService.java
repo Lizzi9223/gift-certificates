@@ -107,14 +107,14 @@ public class CertificateService {
    * @return list of founded certificateDtos
    */
   public List<CertificateDto> find(
-      String tagName,
+      String[] tagNames,
       String certificateName,
       String certificateDescription,
       String sortByDateType,
       String sortByNameType) {
     SearchCriteria searchCriteria =
         new SearchCriteria(
-            tagName, certificateName, certificateDescription, sortByDateType, sortByNameType);
+            tagNames, certificateName, certificateDescription, sortByDateType, sortByNameType);
     List<Certificate> certificates = certificateRepository.find(searchCriteria);
     List<CertificateDto> certificateDtos = certificateMapper.convertToDto(certificates);
     certificateDtos.forEach(

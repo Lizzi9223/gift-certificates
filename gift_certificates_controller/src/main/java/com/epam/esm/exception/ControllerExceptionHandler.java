@@ -1,8 +1,5 @@
-package com.epam.esm.controller.exception;
+package com.epam.esm.exception;
 
-import com.epam.esm.exception.InvalidSearchParamsException;
-import com.epam.esm.exception.ResourceAlreadyExistExcepton;
-import com.epam.esm.exception.ResourceNotFoundException;
 import javax.validation.ValidationException;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -11,6 +8,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;

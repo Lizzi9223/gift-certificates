@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Order DTO
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotNull;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
-public class OrderDto {
+public class OrderDto extends RepresentationModel<OrderDto> {
   private int id;
   @NotNull private int userId;
   private BigDecimal price;

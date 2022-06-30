@@ -16,7 +16,7 @@ import javax.persistence.Id;
  * @version 1.0
  */
 @Entity(name = "orders")
-public class Order {
+public class Order extends BaseEntity{
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;

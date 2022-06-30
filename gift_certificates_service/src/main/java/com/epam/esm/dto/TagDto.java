@@ -3,6 +3,7 @@ package com.epam.esm.dto;
 import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Tag DTO
@@ -10,7 +11,7 @@ import javax.validation.constraints.Size;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
-public class TagDto {
+public class TagDto extends RepresentationModel<TagDto> {
   private int id;
 
   @NotBlank(message = "Name should not be blank")

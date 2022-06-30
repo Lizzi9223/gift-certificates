@@ -1,5 +1,6 @@
 package com.epam.esm.search.model;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Objects;
  * @version 1.0
  */
 public class SearchCriteria {
-  private String tagName;
+  private String[] tagNames;
   private String name;
   private String description;
   private String sortByDateType;
@@ -18,24 +19,24 @@ public class SearchCriteria {
   public SearchCriteria() {}
 
   public SearchCriteria(
-      String tagName,
+      String[] tagNames,
       String name,
       String description,
       String sortByDateType,
       String sortByNameType) {
-    this.tagName = tagName;
+    this.tagNames = tagNames;
     this.name = name;
     this.description = description;
     this.sortByDateType = sortByDateType;
     this.sortByNameType = sortByNameType;
   }
 
-  public String getTagName() {
-    return tagName;
+  public String[] getTagNames() {
+    return tagNames;
   }
 
-  public void setTagName(String tagName) {
-    this.tagName = tagName;
+  public void setTagNames(String[] tagNames) {
+    this.tagNames = tagNames;
   }
 
   public String getName() {
@@ -79,23 +80,23 @@ public class SearchCriteria {
       return false;
     }
     SearchCriteria that = (SearchCriteria) o;
-    return Objects.equals(tagName, that.tagName)
-        && Objects.equals(name, that.name)
-        && Objects.equals(description, that.description)
-        && Objects.equals(sortByDateType, that.sortByDateType)
-        && Objects.equals(sortByNameType, that.sortByNameType);
+    return Arrays.equals(tagNames, that.tagNames) && Objects.equals(name,
+        that.name) && Objects.equals(description, that.description)
+        && Objects.equals(sortByDateType, that.sortByDateType) && Objects.equals(
+        sortByNameType, that.sortByNameType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(
-        tagName, name, description, sortByDateType, sortByNameType);
+    int result = Objects.hash(name, description, sortByDateType, sortByNameType);
+    result = 31 * result + Arrays.hashCode(tagNames);
+    return result;
   }
 
   @Override
   public String toString() {
     return "SearchCriteria{" +
-        "tagName='" + tagName + '\'' +
+        "tagNames=" + Arrays.toString(tagNames) +
         ", name='" + name + '\'' +
         ", description='" + description + '\'' +
         ", sortByDateType='" + sortByDateType + '\'' +

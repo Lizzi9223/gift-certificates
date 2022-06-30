@@ -12,7 +12,7 @@ import javax.persistence.Id;
  * @version 1.0
  */
 @Entity(name = "tag")
-public class Tag {
+public class Tag extends BaseEntity{
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;

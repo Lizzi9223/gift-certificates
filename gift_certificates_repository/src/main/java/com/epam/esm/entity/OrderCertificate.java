@@ -5,8 +5,13 @@ import java.util.Objects;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
+/**
+ * OrderCertificate entity
+ * @author Lizaveta Yakauleva
+ * @version 1.0
+ */
 @Entity(name = "orders_has_gift_certificate")
-public class OrderCertificate {
+public class OrderCertificate extends BaseEntity{
 
   @EmbeddedId private OrderCertificateId orderCertificateId;
 

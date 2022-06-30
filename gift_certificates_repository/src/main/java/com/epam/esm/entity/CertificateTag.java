@@ -4,10 +4,14 @@ import com.epam.esm.entity.key.CertificateTagId;
 import java.util.Objects;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import org.hibernate.envers.Audited;
 
+/**
+ * CertificateTag entity
+ * @author Lizaveta Yakauleva
+ * @version 1.0
+ */
 @Entity(name = "gift_certificate_has_tag")
-public class CertificateTag {
+public class CertificateTag extends BaseEntity{
   @EmbeddedId private CertificateTagId certificateTagId;
 
   public CertificateTag() {}

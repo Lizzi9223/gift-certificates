@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Contains 2 field from OrderDto for order's controller
@@ -12,7 +13,7 @@ import java.util.Objects;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
-public class OrderInfo {
+public class OrderInfo{
   private BigDecimal price;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")

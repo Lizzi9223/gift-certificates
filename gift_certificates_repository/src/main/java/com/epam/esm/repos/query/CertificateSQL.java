@@ -28,8 +28,15 @@ public final class CertificateSQL {
             + "left outer join tag on tag.id=gift_certificate_has_tag.tag_id");
     boolean isWhereClauseAdded = false;
     boolean isOrderClauseAdded = false;
-    if (!Objects.isNull(searchCriteria.getTagName())) {
-      findQuery.append(" where tag.name='").append(searchCriteria.getTagName()).append("'");
+    if (!Objects.isNull(searchCriteria.getTagNames())) {
+      findQuery.append(" where tag.name regexp '");
+      for (String tagName : searchCriteria.getTagNames()) {
+        findQuery.append(tagName).append("|");
+      }
+      findQuery.deleteCharAt(findQuery.length() - 1);
+      findQuery
+          .append("' group by gift_certificate.name having count(*) = ")
+          .append(searchCriteria.getTagNames().length);
       isWhereClauseAdded = true;
     }
     if (Objects.nonNull(searchCriteria.getName())) {

@@ -159,8 +159,7 @@ public class CertificateRepository {
 
   public Optional<Certificate> findById(int id) {
     try {
-      return Optional.of(
-          entityManager.find(Certificate.class, id));
+      return Optional.of(entityManager.find(Certificate.class, id));
     } catch (NoResultException e) {
       logger.error("Certificate {id='" + id + "'} does not exist");
       throw new ResourceNotFoundException(
@@ -182,7 +181,7 @@ public class CertificateRepository {
     if (SearchCriteriaValidator.isValid(searchCriteria)) {
       return (List<Certificate>)
           entityManager
-              .createQuery(CertificateSQL.GET_FIND_QUERY(searchCriteria), Certificate.class)
+              .createNativeQuery(CertificateSQL.GET_FIND_QUERY(searchCriteria), Certificate.class)
               .getResultList();
     } else {
       logger.error("Search certificates parameters are invalid");

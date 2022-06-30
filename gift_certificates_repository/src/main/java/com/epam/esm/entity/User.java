@@ -6,8 +6,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * User entity
+ * @author Lizaveta Yakauleva
+ * @version 1.0
+ */
 @Entity(name = "users")
-public class User {
+public class User extends BaseEntity{
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
