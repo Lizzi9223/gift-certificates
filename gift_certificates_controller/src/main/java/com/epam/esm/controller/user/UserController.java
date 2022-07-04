@@ -2,7 +2,7 @@ package com.epam.esm.controller.user;
 
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.service.UserService;
-import com.epam.esm.utils.Pagination;
+import com.epam.esm.utils.pagination.Pagination;
 import com.epam.esm.utils.hateoas.UserHateoas;
 import java.util.List;
 import org.apache.log4j.Logger;

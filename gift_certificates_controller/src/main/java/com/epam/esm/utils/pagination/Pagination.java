@@ -1,4 +1,4 @@
-package com.epam.esm.utils;
+package com.epam.esm.utils.pagination;
 
 import java.util.List;
 import java.util.stream.Collectors;

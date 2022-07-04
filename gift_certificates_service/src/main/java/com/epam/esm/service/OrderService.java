@@ -32,7 +32,6 @@ public class OrderService {
   private static final Logger logger = Logger.getLogger(OrderService.class);
   private final OrderRepository orderRepository;
   private final OrderCertificateRepository orderCertificateRepository;
-
   private final CertificateService certificateService;
   private final OrderMapper orderMapper;
   private final DtoValidator dtoValidator;
@@ -41,10 +40,8 @@ public class OrderService {
   public OrderService(
       OrderRepository orderRepository,
       OrderCertificateRepository orderCertificateRepository,
-      CertificateRepository certificateRepository,
       CertificateService certificateService,
       OrderMapper orderMapper,
-      CertificateMapper certificateMapper,
       DtoValidator dtoValidator) {
     this.orderRepository = orderRepository;
     this.orderCertificateRepository = orderCertificateRepository;
@@ -63,18 +60,16 @@ public class OrderService {
     orderDto.setPurchaseDate(LocalDateTime.now());
     dtoValidator.validate(orderDto, CreateInfo.class);
     Order order = orderMapper.convertToEntity(orderDto);
-    int orderId = orderRepository.create(order);
     if (Objects.nonNull(orderDto.getCertificates())) {
       int[] certificateIds = new int[orderDto.getCertificates().size()];
       BigDecimal cost = BigDecimal.ZERO;
-      for(int i=0; i<orderDto.getCertificates().size();i++){
-        CertificateDto certificateDto = certificateService
-            .find(orderDto.getCertificates().get(i).getName());
-        certificateIds[i] =certificateDto.getId();
+      for (int i = 0; i < orderDto.getCertificates().size(); i++) {
+        CertificateDto certificateDto =
+            certificateService.find(orderDto.getCertificates().get(i).getName());
+        certificateIds[i] = certificateDto.getId();
         cost = cost.add(certificateDto.getPrice());
-        logger.debug("certificateDto.getPrice() = " + certificateDto.getPrice().toString());
-        logger.debug("cost = " + cost.toString());
       }
+      int orderId = orderRepository.create(order);
       orderRepository.setCostToOrder(orderId, cost);
       orderCertificateRepository.create(orderId, certificateIds);
     }
@@ -87,12 +82,10 @@ public class OrderService {
    * @return founded orderDto
    */
   public OrderDto findById(int id) {
-    Optional<Order> order = orderRepository.findById(id);
-    if (order.isPresent()) {
-      OrderDto orderDto = orderMapper.convertToDto(order.get());
-      setOrderCertificates(orderDto);
-      return orderDto;
-    } else return null;
+    Order order = orderRepository.findById(id);
+    OrderDto orderDto = orderMapper.convertToDto(order);
+    setOrderCertificates(orderDto);
+    return orderDto;
   }
 
   /**
@@ -133,11 +126,13 @@ public class OrderService {
     orderDto.setCertificates(certificateDtos);
   }
 
-  public BigDecimal countUserAllOrdersCost(int userId){
+  public BigDecimal countUserAllOrdersCost(int userId) {
     List<Order> orders = orderRepository.findAllUserOrders(userId);
     BigDecimal totalCost = BigDecimal.ZERO;
-    for(Order order : orders)
-      totalCost = totalCost.add(order.getPrice());
+    for (Order order : orders){
+      if(Objects.nonNull(order.getPrice())) totalCost = totalCost.add(order.getPrice());
+      else logger.debug("Order [id=" + order.getId() + "] : total_cost is null");
+    }
     return totalCost;
   }
 }

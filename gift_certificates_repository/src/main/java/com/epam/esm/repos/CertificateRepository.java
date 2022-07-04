@@ -28,7 +28,8 @@ import org.springframework.stereotype.Repository;
 @ComponentScan("com.epam.esm")
 public class CertificateRepository {
   private static final Logger logger = Logger.getLogger(CertificateRepository.class);
-  @PersistenceContext private final EntityManager entityManager;
+  @PersistenceContext
+  private final EntityManager entityManager;
   private final ResourceBundleMessageSource messageSource;
 
   @Autowired

@@ -1,4 +1,4 @@
-package com.epam.esm.utils;
+package com.epam.esm.utils.pagination;
 
 /**
  * Thrown when params for pagination are not valid

@@ -108,13 +108,11 @@ public class TagRepository {
    */
   public Optional<Tag> find(String name) {
     try {
-      Optional<Tag> tag =
-          Optional.of(
-              entityManager
-                  .createQuery(TagSQL.FIND_BY_NAME, Tag.class)
-                  .setParameter(TableField.NAME, name)
-                  .getSingleResult());
-      return tag;
+      return Optional.of(
+          entityManager
+              .createQuery(TagSQL.FIND_BY_NAME, Tag.class)
+              .setParameter(TableField.NAME, name)
+              .getSingleResult());
     } catch (NoResultException e) {
       logger.error("Tag {name='" + name + "'} does not exist");
       throw new ResourceNotFoundException(

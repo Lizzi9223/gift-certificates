@@ -2,7 +2,7 @@ package com.epam.esm.controller.certificate;
 
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.utils.Pagination;
+import com.epam.esm.utils.pagination.Pagination;
 import com.epam.esm.utils.hateoas.CertificateHateoas;
 import java.util.List;
 import org.apache.log4j.Logger;

@@ -8,7 +8,6 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
@@ -117,9 +116,17 @@ public class ControllerExceptionHandler {
     String errorCode = String.valueOf(httpStatus.value());
     String CERTIFICATE_CODE = "01";
     String TAG_CODE = "02";
+    String USER_CODE = "03";
+    String ORDER_CODE = "04";
     String TAG = "tag";
+    String ORDER = "order";
+    String USER = "user";
     if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(TAG))
       errorCode += TAG_CODE;
+    else if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(ORDER))
+      errorCode += USER_CODE;
+    else if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(USER))
+      errorCode += ORDER_CODE;
     else errorCode += CERTIFICATE_CODE;
     exceptionResponse.setErrorCode(errorCode);
     return exceptionResponse;

@@ -1,12 +1,16 @@
 package com.epam.esm.controller.order;
 
 import com.epam.esm.dto.OrderDto;
+import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.OrderService;
-import com.epam.esm.utils.Pagination;
+import com.epam.esm.utils.pagination.Pagination;
 import com.epam.esm.utils.hateoas.OrderHateoas;
 import java.util.List;
+import java.util.Objects;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,13 +34,15 @@ public class OrderController {
   private final OrderService orderService;
   private final Pagination pagination;
   private final OrderHateoas orderHateoas;
+  private final ResourceBundleMessageSource messageSource;
 
   @Autowired
   public OrderController(
-      OrderService orderService, Pagination pagination, OrderHateoas orderHateoas) {
+      OrderService orderService, Pagination pagination, OrderHateoas orderHateoas, ResourceBundleMessageSource messageSource) {
     this.orderService = orderService;
     this.pagination = pagination;
     this.orderHateoas = orderHateoas;
+    this.messageSource = messageSource;
   }
 
   /**
@@ -74,6 +80,14 @@ public class OrderController {
    */
   @PostMapping(value = "/user/{userId}")
   public ResponseEntity<Void> create(@RequestBody OrderDto orderDto, @PathVariable("userId") int userId) {
+    if (Objects.isNull(orderDto.getCertificates()) || orderDto.getCertificates().size() == 0){
+      logger.error("Order is empty");
+      throw new OrderIsEmptyException(
+          messageSource.getMessage(
+              "message.controller.orderIsEmpty",
+              new Object[] {},
+              LocaleContextHolder.getLocale()));
+    }
     orderDto.setUserId(userId);
     orderService.create(orderDto);
     return new ResponseEntity<>(HttpStatus.OK);

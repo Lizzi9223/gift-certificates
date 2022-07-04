@@ -1,9 +1,11 @@
 package com.epam.esm.repos;
 
 import com.epam.esm.entity.Order;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.repos.metadata.TableField;
 import com.epam.esm.repos.query.OrderSQL;
+import com.epam.esm.repos.query.TagSQL;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,18 +55,17 @@ public class OrderRepository {
    * @param id id of the order to search for
    * @return founded order
    */
-  public Optional<Order> findById(int id) {
-    try {
-      return Optional.of(entityManager.find(Order.class, id));
-    } catch (NoResultException e) {
+  public Order findById(int id) {
+    Order order = entityManager.find(Order.class, id);
+    if(Objects.isNull(order)){
       logger.error("Order {id ='" + id + "'} does not exist");
       throw new ResourceNotFoundException(
           messageSource.getMessage(
               "message.repository.orderIdNotExists",
               new Object[] {id},
-              LocaleContextHolder.getLocale()),
-          e);
+              LocaleContextHolder.getLocale()));
     }
+    return order;
   }
 
   /**
