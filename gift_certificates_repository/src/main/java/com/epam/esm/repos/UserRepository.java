@@ -1,16 +1,14 @@
 package com.epam.esm.repos;
 
+import com.epam.esm.consts.MessagesKeys;
+import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.User;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.repos.metadata.TableField;
-import com.epam.esm.repos.query.UserSQL;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +20,7 @@ import org.springframework.stereotype.Repository;
 @ComponentScan("com.epam.esm")
 public class UserRepository {
   private static final Logger logger = Logger.getLogger(CertificateRepository.class);
-  @PersistenceContext private final EntityManager entityManager;
+  private final EntityManager entityManager;
   private final ResourceBundleMessageSource messageSource;
 
   @Autowired
@@ -35,24 +33,17 @@ public class UserRepository {
    * Searches for user with provided name <br>
    * If user with provided name does not exist, {@code ResourceNotFoundException} is thrown
    *
-   * @param name name of the user to search for
+   * @param login name of the user to search for
    * @return founded user
    */
-  public Optional<User> find(String name) {
+  public User find(String login) {
     try {
-      return Optional.of(
-          entityManager
-              .createQuery(UserSQL.FIND_BY_NAME, User.class)
-              .setParameter(TableField.NAME, name)
-              .getSingleResult());
+      return entityManager
+          .createNamedQuery(NamedQueriesKeys.USER_FIND_BY_LOGIN, User.class)
+          .setParameter(TableField.LOGIN, login)
+          .getSingleResult();
     } catch (NoResultException e) {
-      logger.error("User {name='" + name + "'} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.userNameNotExists",
-              new Object[] {name},
-              LocaleContextHolder.getLocale()),
-          e);
+      throw getExceptionForUserLoginNotExist(e, login);
     }
   }
 
@@ -63,18 +54,10 @@ public class UserRepository {
    * @param id id of the user to search for
    * @return founded user
    */
-  public Optional<User> find(int id) {
-    try {
-      return Optional.of(entityManager.find(User.class, id));
-    } catch (NoResultException e) {
-      logger.error("User {id ='" + id + "'} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.userIdNotExists",
-              new Object[] {id},
-              LocaleContextHolder.getLocale()),
-          e);
-    }
+  public User find(Long id) {
+    User user = entityManager.find(User.class, id);
+    if (Objects.nonNull(user)) return user;
+    else throw getExceptionForUserIdNotExist(null, id);
   }
 
   /**
@@ -83,6 +66,25 @@ public class UserRepository {
    * @return list of all existing users
    */
   public List<User> findAll() {
-    return entityManager.createQuery(UserSQL.FIND_ALL, User.class).getResultList();
+    return entityManager
+        .createNamedQuery(NamedQueriesKeys.USER_FIND_ALL, User.class)
+        .getResultList();
+  }
+
+  private ResourceNotFoundException getExceptionForUserLoginNotExist(
+      NoResultException e, String login) {
+    logger.error("User {login='" + login + "'} does not exist");
+    throw new ResourceNotFoundException(
+        messageSource.getMessage(
+            MessagesKeys.USER_LOGIN_NOT_EXIST, new Object[] {login}, LocaleContextHolder.getLocale()),
+        e);
+  }
+
+  private ResourceNotFoundException getExceptionForUserIdNotExist(NoResultException e, Long id) {
+    logger.error("User {id ='" + id + "'} does not exist");
+    throw new ResourceNotFoundException(
+        messageSource.getMessage(
+            MessagesKeys.USER_ID_NOT_EXIST, new Object[] {id}, LocaleContextHolder.getLocale()),
+        e);
   }
 }

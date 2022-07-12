@@ -1,21 +1,33 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.consts.NamedQueriesKeys;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  * User entity
+ *
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
 @Entity(name = "users")
-public class User extends BaseEntity{
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+@NamedQueries({
+    @NamedQuery(name = NamedQueriesKeys.USER_FIND_BY_LOGIN,
+        query = "SELECT u FROM users u WHERE u.login = :login"),
+    @NamedQuery(name = NamedQueriesKeys.USER_FIND_ALL,
+        query = "SELECT u FROM users u")
+})
+public class User extends BaseEntity {
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
   private String login;
 
@@ -23,21 +35,24 @@ public class User extends BaseEntity{
 
   private String name;
 
-  public User() {
-  }
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private Set<Order> orders = new HashSet<>();
 
-  public User(int id, String login, String password, String name) {
+  public User() {}
+
+  public User(Long id, String login, String password, String name, Set<Order> orders) {
     this.id = id;
     this.login = login;
     this.password = password;
     this.name = name;
+    this.orders = orders;
   }
 
-  public int getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -65,31 +80,53 @@ public class User extends BaseEntity{
     this.name = name;
   }
 
+  public Set<Order> getOrders() {
+    return orders;
+  }
+
+  public void setOrders(Set<Order> orders) {
+    this.orders = orders;
+  }
+
+  public void addOrder(Order order) {
+    orders.add(order);
+    order.setUser(this);
+  }
+
+  public void removeOrder(Order order) {
+    orders.remove(order);
+    order.setUser(null);
+  }
+
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
     User user = (User) o;
-    return id == user.id && Objects.equals(login, user.login) && Objects.equals(
-        password, user.password) && Objects.equals(name, user.name);
+    return Objects.equals(login, user.login);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, login, password, name);
+    return Objects.hash(login);
   }
 
   @Override
   public String toString() {
-    return "User{" +
-        "id=" + id +
-        ", login='" + login + '\'' +
-        ", password='" + password + '\'' +
-        ", name='" + name + '\'' +
-        '}';
+    return "User{"
+        + "id="
+        + id
+        + ", login='"
+        + login
+        + '\''
+        + ", password='"
+        + password
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", orders="
+        + orders
+        + '}';
   }
 }

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ComponentScan("com.epam.esm")
 public class OrderMapper {
-  private static final Logger logger = Logger.getLogger(CertificateMapper.class);
   private final ModelMapper modelMapper;
 
   @Autowired

@@ -1,4 +1,4 @@
-package com.epam.esm.controller.user;
+package com.epam.esm.controller;
 
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.service.UserService;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
-  private static final Logger logger = Logger.getLogger(UserController.class);
   private final UserService userService;
   private final Pagination pagination;
   private final UserHateoas userHateoas;
@@ -42,9 +41,9 @@ public class UserController {
    * @param name name of the user to find
    * @return founded user
    */
-  @GetMapping(value = "/{name}")
-  public ResponseEntity<UserDto> findByName(@PathVariable("name") String name) {
-    UserDto userDto = userService.find(name);
+  @GetMapping(value = "/{login}")
+  public ResponseEntity<UserDto> findByLogin(@PathVariable("login") String login) {
+    UserDto userDto = userService.find(login);
     userHateoas.getLinks(userDto);
     return new ResponseEntity<>(userDto, HttpStatus.OK);
   }

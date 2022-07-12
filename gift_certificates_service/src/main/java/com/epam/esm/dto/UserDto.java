@@ -12,7 +12,7 @@ import org.springframework.hateoas.RepresentationModel;
  * @version 1.0
  */
 public class UserDto extends RepresentationModel<UserDto> {
-  private int id;
+  private Long id;
 
   @NotBlank(message = "Login should not be blank")
   @Size(min = 2, max = 20, message = "Login length should be between 2 and 20")
@@ -28,18 +28,18 @@ public class UserDto extends RepresentationModel<UserDto> {
 
   public UserDto() {}
 
-  public UserDto(int id, String login, String password, String name) {
+  public UserDto(Long id, String login, String password, String name) {
     this.id = id;
     this.login = login;
     this.password = password;
     this.name = name;
   }
 
-  public int getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -75,16 +75,18 @@ public class UserDto extends RepresentationModel<UserDto> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
     UserDto userDto = (UserDto) o;
-    return id == userDto.id
-        && Objects.equals(login, userDto.login)
-        && Objects.equals(password, userDto.password)
-        && Objects.equals(name, userDto.name);
+    return Objects.equals(id, userDto.id) && Objects.equals(login, userDto.login)
+        && Objects.equals(password, userDto.password) && Objects.equals(name,
+        userDto.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, login, password, name);
+    return Objects.hash(super.hashCode(), id, login, password, name);
   }
 
   @Override

@@ -7,15 +7,11 @@ import com.epam.esm.repos.TagRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MostWidelyUsedTagService {
-  private static final Logger logger = Logger.getLogger(MostWidelyUsedTagService.class);
-  private final TagRepository tagRepository;
-  private final TagMapper tagMapper;
   private final UserService userService;
   private final OrderService orderService;
   private final TagService tagService;
@@ -27,8 +23,6 @@ public class MostWidelyUsedTagService {
       UserService userService,
       OrderService orderService,
       TagService tagService) {
-    this.tagRepository = tagRepository;
-    this.tagMapper = tagMapper;
     this.userService = userService;
     this.orderService = orderService;
     this.tagService = tagService;
@@ -39,9 +33,9 @@ public class MostWidelyUsedTagService {
    * @return founded tag
    */
   public TagDto findTag() {
-    int userId = userService.findUserWithHighestOrdersCost();
+    Long userId = userService.findUserWithHighestOrdersCost();
     List<OrderDto> orderDtos = orderService.findByUserId(userId);
-    Map<Integer, Integer> tagsCount = new HashMap<>();
+    Map<Long, Integer> tagsCount = new HashMap<>();
     orderDtos.forEach(
         o -> {
           o.getCertificates()
@@ -54,7 +48,7 @@ public class MostWidelyUsedTagService {
                             });
                   });
         });
-    int tagId =
+    Long tagId =
         tagsCount.entrySet().stream()
             .max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1)
             .get()

@@ -10,23 +10,14 @@ import org.springframework.core.env.StandardEnvironment;
 @SpringBootApplication(scanBasePackages = "com.epam.esm")
 public class StartSpringBootApplication{
   public static void main(String[] args) {
-    //SpringApplication.run(StartSpringBootApplication.class, args);
+    SpringApplication.run(StartSpringBootApplication.class, args);
 
-    ConfigurableEnvironment environment = new StandardEnvironment();
-    environment.setActiveProfiles("prod");
-
-    SpringApplication application = new SpringApplication(StartSpringBootApplication.class);
-    application.setEnvironment(environment);
-    application.setAdditionalProfiles("dev");
-    application.run(args);
-  }
-
-  @Bean
-  public ResourceBundleMessageSource getMessageSource() {
-    ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
-    resourceBundleMessageSource.setBasename("messages");
-    resourceBundleMessageSource.setDefaultEncoding("UTF-8");
-    resourceBundleMessageSource.setUseCodeAsDefaultMessage(true);
-    return resourceBundleMessageSource;
+//    ConfigurableEnvironment environment = new StandardEnvironment();
+//    environment.setActiveProfiles("dev");
+//
+//    SpringApplication application = new SpringApplication(StartSpringBootApplication.class);
+//    application.setEnvironment(environment);
+//    application.setAdditionalProfiles("test");
+//    application.run(args);
   }
 }

@@ -1,5 +1,7 @@
 package com.epam.esm.repos;
 
+import com.epam.esm.consts.MessagesKeys;
+import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.exception.InvalidSearchParamsException;
 import com.epam.esm.exception.ResourceAlreadyExistExcepton;
@@ -11,13 +13,10 @@ import com.epam.esm.search.validator.SearchCriteriaValidator;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import org.apache.log4j.Logger;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -28,8 +27,7 @@ import org.springframework.stereotype.Repository;
 @ComponentScan("com.epam.esm")
 public class CertificateRepository {
   private static final Logger logger = Logger.getLogger(CertificateRepository.class);
-  @PersistenceContext
-  private final EntityManager entityManager;
+  public final EntityManager entityManager;
   private final ResourceBundleMessageSource messageSource;
 
   @Autowired
@@ -45,69 +43,40 @@ public class CertificateRepository {
    * thrown Otherwise created certificate id is returned
    *
    * @param certificate certificate to create
-   * @return created certificate id
    */
-  public int create(Certificate certificate) {
+  public void createOrUpdate(Certificate certificate) {
+    if (Objects.nonNull(certificate.getId())) prepareCertificateForUpdate(certificate);
     try {
-      if (Objects.isNull(certificate.getCreateDate()))
-        certificate.setCreateDate(LocalDateTime.now());
-      if (Objects.isNull(certificate.getLastUpdateDate()))
-        certificate.setLastUpdateDate(LocalDateTime.now());
       entityManager.getTransaction().begin();
-      entityManager.persist(certificate);
+      entityManager.merge(certificate);
       entityManager.getTransaction().commit();
-      return certificate.getId();
     } catch (PersistenceException e) {
       entityManager.getTransaction().rollback();
-      logger.error("Certificate {name='" + certificate.getName() + "'} already exists");
-      throw new ResourceAlreadyExistExcepton(
-          messageSource.getMessage(
-              "message.repository.certificateNameExists",
-              new Object[] {certificate.getName()},
-              LocaleContextHolder.getLocale()),
-          e);
+      throw getExceptionForCertificateNameAlreadyExist(e, certificate.getName());
     }
   }
 
   /**
-   * Updates existing certificate <br>
-   * If certificate with provided id does not exist, {@code ResourceNotFoundException} is thrown
+   * Checks if certificate with provided id exists <br>
+   * If it does not, {@code ResourceNotFound} exception is thrown <br>
+   * Otherwise all fields of certificate are checked <br>
+   * and if any field is not supposed to be updated, it is filled with initial data
    *
-   * @param certificateNew info for update
+   * @param certificate certificate to update
    */
-  public void update(Certificate certificateNew) {
-    Certificate certificate = entityManager.find(Certificate.class, certificateNew.getId());
-    if (Objects.nonNull(certificate)) {
-      try {
-        entityManager.getTransaction().begin();
-        getCertificateToUpdate(certificate, certificateNew);
-        certificate.setLastUpdateDate(LocalDateTime.now());
-        entityManager.merge(certificate);
-        entityManager.getTransaction().commit();
-      } catch (PersistenceException e) {
-        Throwable t = e.getCause();
-        while ((t != null) && !(t instanceof ConstraintViolationException)) {
-          t = t.getCause();
-        }
-        if (t != null) {
-          entityManager.getTransaction().rollback();
-          logger.error("Certificate {name='" + certificate.getName() + "'} already exists");
-          throw new ResourceAlreadyExistExcepton(
-              messageSource.getMessage(
-                  "message.repository.certificateNameExists",
-                  new Object[] {certificate.getName()},
-                  LocaleContextHolder.getLocale()),
-              e);
-        } else throw e;
-      }
-    } else {
-      logger.error("Certificate {id=" + certificateNew.getId() + "} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.certificateIdNotExists",
-              new Object[] {certificateNew.getId()},
-              LocaleContextHolder.getLocale()));
-    }
+  private void prepareCertificateForUpdate(Certificate certificate) {
+    Certificate initialCert = findById(certificate.getId());
+    if (Objects.isNull(initialCert))
+      throw getExceptionForCertificateIdNotExist(null, certificate.getId());
+    if (Objects.isNull(certificate.getName())) certificate.setName(initialCert.getName());
+    if (Objects.isNull(certificate.getDescription()))
+      certificate.setDescription(initialCert.getDescription());
+    if (Objects.isNull(certificate.getPrice())) certificate.setPrice(initialCert.getPrice());
+    if (certificate.getDuration() == 0) certificate.setDuration(initialCert.getDuration());
+    if (Objects.isNull(certificate.getCreateDate()))
+      certificate.setCreateDate(initialCert.getCreateDate());
+    if (Objects.isNull(certificate.getLastUpdateDate()))
+      certificate.setLastUpdateDate(LocalDateTime.now());
   }
 
   /**
@@ -116,60 +85,44 @@ public class CertificateRepository {
    *
    * @param id id of the certificate to delete
    */
-  public void delete(int id) {
+  public void delete(Long id) {
     Certificate certificate = entityManager.find(Certificate.class, id);
     if (Objects.nonNull(certificate)) {
       entityManager.getTransaction().begin();
       entityManager.remove(certificate);
       entityManager.getTransaction().commit();
-    } else {
-      entityManager.getTransaction().rollback();
-      logger.error("Certificate {id=" + id + "} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.certificateIdNotExists",
-              new Object[] {id},
-              LocaleContextHolder.getLocale()));
-    }
+    } else throw getExceptionForCertificateIdNotExist(null, id);
   }
 
   /**
-   * Searches for certificate with provided name <br>
+   * Searches for certificate by provided name <br>
    * If certificate with provided name does not exist, {@code ResourceNotFoundException} is thrown
    *
    * @param name name of the certificate to search for
    * @return founded certificate
    */
-  public Optional<Certificate> find(String name) {
+  public Certificate find(String name) {
     try {
-      return Optional.of(
-          entityManager
-              .createQuery(CertificateSQL.FIND_BY_NAME, Certificate.class)
-              .setParameter(TableField.NAME, name)
-              .getSingleResult());
+      return entityManager
+          .createNamedQuery(NamedQueriesKeys.CERTIFICATE_FIND_BY_NAME, Certificate.class)
+          .setParameter(TableField.NAME, name)
+          .getSingleResult();
     } catch (NoResultException e) {
-      logger.error("Certificate {name='" + name + "'} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.certificateNameNotExists",
-              new Object[] {name},
-              LocaleContextHolder.getLocale()),
-          e);
+      throw getExceptionForCertificateNameNotExist(e, name);
     }
   }
 
-  public Optional<Certificate> findById(int id) {
-    try {
-      return Optional.of(entityManager.find(Certificate.class, id));
-    } catch (NoResultException e) {
-      logger.error("Certificate {id='" + id + "'} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.certificateIdNotExists",
-              new Object[] {id},
-              LocaleContextHolder.getLocale()),
-          e);
-    }
+  /**
+   * Searches for certificate by provided id <br>
+   * If certificate with provided id does not exist, {@code ResourceNotFoundException} is thrown
+   *
+   * @param id id of the certificate to search for
+   * @return founded certificate
+   */
+  public Certificate findById(Long id) {
+    Certificate certificate = entityManager.find(Certificate.class, id);
+    if (Objects.nonNull(certificate)) return certificate;
+    else throw getExceptionForCertificateIdNotExist(null, id);
   }
 
   /**
@@ -180,26 +133,49 @@ public class CertificateRepository {
    */
   public List<Certificate> find(SearchCriteria searchCriteria) {
     if (SearchCriteriaValidator.isValid(searchCriteria)) {
-      return (List<Certificate>)
-          entityManager
-              .createNativeQuery(CertificateSQL.GET_FIND_QUERY(searchCriteria), Certificate.class)
-              .getResultList();
-    } else {
-      logger.error("Search certificates parameters are invalid");
-      throw new InvalidSearchParamsException(
-          messageSource.getMessage(
-              "message.repository.invalidSearchParams", null, LocaleContextHolder.getLocale()));
-    }
+      return entityManager
+          .createNativeQuery(CertificateSQL.GET_FIND_QUERY(searchCriteria), Certificate.class)
+          .getResultList();
+    } else throw getInvalidSearchParamsException();
   }
 
-  private Certificate getCertificateToUpdate(Certificate certInitial, Certificate certNew) {
-    if (Objects.nonNull(certNew.getName())) certInitial.setName(certNew.getName());
-    if (Objects.nonNull(certNew.getDescription()))
-      certInitial.setDescription(certNew.getDescription());
-    if (Objects.nonNull(certNew.getPrice())) certInitial.setPrice(certNew.getPrice());
-    if (Objects.nonNull(certNew.getCreateDate()))
-      certInitial.setCreateDate(certNew.getCreateDate());
-    if (certNew.getDuration() != 0) certInitial.setDuration(certNew.getDuration());
-    return certInitial;
+  private ResourceNotFoundException getExceptionForCertificateIdNotExist(
+      NoResultException e, Long id) {
+    logger.error("Certificate {id='" + id + "'} does not exist");
+    return new ResourceNotFoundException(
+        messageSource.getMessage(
+            MessagesKeys.CERTIFICATE_ID_NOT_EXIST,
+            new Object[] {id},
+            LocaleContextHolder.getLocale()),
+        e);
+  }
+
+  private ResourceNotFoundException getExceptionForCertificateNameNotExist(
+      NoResultException e, String name) {
+    logger.error("Certificate {name='" + name + "'} does not exist");
+    return new ResourceNotFoundException(
+        messageSource.getMessage(
+            MessagesKeys.CERTIFICATE_NAME_NOT_EXIST,
+            new Object[] {name},
+            LocaleContextHolder.getLocale()),
+        e);
+  }
+
+  private ResourceAlreadyExistExcepton getExceptionForCertificateNameAlreadyExist(
+      PersistenceException e, String name) {
+    logger.error("Certificate {name='" + name + "'} already exists");
+    return new ResourceAlreadyExistExcepton(
+        messageSource.getMessage(
+            MessagesKeys.CERTIFICATE_NAME_ALREADY_EXIST,
+            new Object[] {name},
+            LocaleContextHolder.getLocale()),
+        e);
+  }
+
+  private InvalidSearchParamsException getInvalidSearchParamsException() {
+    logger.error("Search certificates parameters are invalid");
+    return new InvalidSearchParamsException(
+        messageSource.getMessage(
+            MessagesKeys.INVALID_SEARCH_PARAMS, null, LocaleContextHolder.getLocale()));
   }
 }

@@ -1,16 +1,11 @@
 package com.epam.esm.controller.order;
 
 import com.epam.esm.dto.OrderDto;
-import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.OrderService;
-import com.epam.esm.utils.pagination.Pagination;
 import com.epam.esm.utils.hateoas.OrderHateoas;
+import com.epam.esm.utils.pagination.Pagination;
 import java.util.List;
-import java.util.Objects;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,19 +25,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/order")
 public class OrderController {
-  private static final Logger logger = Logger.getLogger(OrderController.class);
   private final OrderService orderService;
   private final Pagination pagination;
   private final OrderHateoas orderHateoas;
-  private final ResourceBundleMessageSource messageSource;
 
   @Autowired
   public OrderController(
-      OrderService orderService, Pagination pagination, OrderHateoas orderHateoas, ResourceBundleMessageSource messageSource) {
+      OrderService orderService, Pagination pagination, OrderHateoas orderHateoas) {
     this.orderService = orderService;
     this.pagination = pagination;
     this.orderHateoas = orderHateoas;
-    this.messageSource = messageSource;
   }
 
   /**
@@ -53,10 +45,11 @@ public class OrderController {
    */
   @GetMapping(value = "/user/{userId}")
   public ResponseEntity<List<OrderDto>> findByUserId(
-      @PathVariable("userId") int userId,
+      @PathVariable("userId") Long userId,
       @RequestParam(required = true, name = "page") int page,
       @RequestParam(required = true, name = "pageSize") int pageSize) {
-    List<OrderDto> orderDtos = (List<OrderDto>) pagination.paginate(orderService.findByUserId(userId), page, pageSize);
+    List<OrderDto> orderDtos =
+        (List<OrderDto>) pagination.paginate(orderService.findByUserId(userId), page, pageSize);
     orderDtos.forEach(orderHateoas::getLinks);
     return new ResponseEntity<>(orderDtos, HttpStatus.OK);
   }
@@ -68,7 +61,7 @@ public class OrderController {
    * @return ResponseEntity containing http status and founded order info
    */
   @GetMapping(value = "/{id}")
-  public ResponseEntity<OrderInfo> findById(@PathVariable("id") int id) {
+  public ResponseEntity<OrderInfo> findById(@PathVariable("id") Long id) {
     return new ResponseEntity<>(new OrderInfo(orderService.findById(id)), HttpStatus.OK);
   }
 
@@ -79,17 +72,9 @@ public class OrderController {
    * @return ResponseEntity containing only http status (without body)
    */
   @PostMapping(value = "/user/{userId}")
-  public ResponseEntity<Void> create(@RequestBody OrderDto orderDto, @PathVariable("userId") int userId) {
-    if (Objects.isNull(orderDto.getCertificates()) || orderDto.getCertificates().size() == 0){
-      logger.error("Order is empty");
-      throw new OrderIsEmptyException(
-          messageSource.getMessage(
-              "message.controller.orderIsEmpty",
-              new Object[] {},
-              LocaleContextHolder.getLocale()));
-    }
-    orderDto.setUserId(userId);
-    orderService.create(orderDto);
+  public ResponseEntity<Void> create(
+      @RequestBody OrderDto orderDto, @PathVariable("userId") Long userId) {
+    orderService.create(orderDto, userId);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

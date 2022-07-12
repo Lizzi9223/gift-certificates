@@ -1,4 +1,4 @@
-package com.epam.esm.controller.tag;
+package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.MostWidelyUsedTagService;
@@ -6,7 +6,6 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.utils.pagination.Pagination;
 import com.epam.esm.utils.hateoas.TagHateoas;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/tag")
 public class TagController {
-  private static final Logger logger = Logger.getLogger(TagController.class);
   private final TagService tagService;
   private final MostWidelyUsedTagService mostWidelyUsedTagService;
   private final Pagination pagination;
@@ -63,7 +61,7 @@ public class TagController {
    * @return return ResponseEntity containing only http status (without body)
    */
   @DeleteMapping(value = "/{id}")
-  public ResponseEntity<Void> delete(@PathVariable("id") int id) {
+  public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
     tagService.delete(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
@@ -90,7 +88,7 @@ public class TagController {
    */
   @GetMapping(value = "/{name}")
   public ResponseEntity<TagDto> findByName(@PathVariable("name") String name){
-    TagDto tagDto = tagService.find(name);
+    TagDto tagDto = tagService.findByName(name);
     tagHateoas.getSelfLink(tagDto);
     return new ResponseEntity<>(tagDto, HttpStatus.OK);
   }
@@ -100,7 +98,7 @@ public class TagController {
    * @return ResponseEntity containing http status and founded tag
    */
   @GetMapping(value = "/find")
-  public ResponseEntity<TagDto> findTag() {
+  public ResponseEntity<TagDto> findMostWidelyUsedTag() {
     TagDto tagDto = mostWidelyUsedTagService.findTag();
     tagHateoas.getSelfLink(tagDto);
     return new ResponseEntity<>(tagDto, HttpStatus.OK);

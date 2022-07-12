@@ -15,8 +15,8 @@ import org.springframework.hateoas.RepresentationModel;
  * @version 1.0
  */
 public class OrderDto extends RepresentationModel<OrderDto> {
-  private int id;
-  @NotNull private int userId;
+  private Long id;
+  @NotNull private Long userId;
   private BigDecimal price;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
@@ -28,8 +28,8 @@ public class OrderDto extends RepresentationModel<OrderDto> {
   public OrderDto() {}
 
   public OrderDto(
-      int id,
-      int userId,
+      Long id,
+      Long userId,
       BigDecimal price,
       LocalDateTime purchaseDate,
       List<CertificateDto> certificates) {
@@ -40,19 +40,19 @@ public class OrderDto extends RepresentationModel<OrderDto> {
     this.certificates = certificates;
   }
 
-  public int getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
-  public int getUserId() {
+  public Long getUserId() {
     return userId;
   }
 
-  public void setUserId(int userId) {
+  public void setUserId(Long userId) {
     this.userId = userId;
   }
 
@@ -88,17 +88,19 @@ public class OrderDto extends RepresentationModel<OrderDto> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
     OrderDto orderDto = (OrderDto) o;
-    return id == orderDto.id
-        && userId == orderDto.userId
-        && Objects.equals(price, orderDto.price)
-        && Objects.equals(purchaseDate, orderDto.purchaseDate)
-        && Objects.equals(certificates, orderDto.certificates);
+    return Objects.equals(id, orderDto.id) && Objects.equals(userId,
+        orderDto.userId) && Objects.equals(price, orderDto.price)
+        && Objects.equals(purchaseDate, orderDto.purchaseDate) && Objects.equals(
+        certificates, orderDto.certificates);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, userId, price, purchaseDate, certificates);
+    return Objects.hash(super.hashCode(), id, userId, price, purchaseDate, certificates);
   }
 
   @Override

@@ -1,5 +1,7 @@
 package com.epam.esm.repos;
 
+import com.epam.esm.consts.MessagesKeys;
+import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.ResourceAlreadyExistExcepton;
 import com.epam.esm.exception.ResourceNotFoundException;
@@ -7,11 +9,9 @@ import com.epam.esm.repos.metadata.TableField;
 import com.epam.esm.repos.query.TagSQL;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.IntStream;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Repository;
 @ComponentScan("com.epam.esm")
 public class TagRepository {
   private static final Logger logger = Logger.getLogger(CertificateRepository.class);
-  @PersistenceContext private final EntityManager entityManager;
+  private final EntityManager entityManager;
   private final ResourceBundleMessageSource messageSource;
 
   @Autowired
@@ -40,7 +40,7 @@ public class TagRepository {
    * @param tag tag to create
    * @return id of the created tag
    */
-  public int create(Tag tag) {
+  public Long create(Tag tag) {
     try {
       entityManager.getTransaction().begin();
       entityManager.persist(tag);
@@ -48,33 +48,8 @@ public class TagRepository {
       return tag.getId();
     } catch (PersistenceException e) {
       entityManager.getTransaction().rollback();
-      logger.error("Tag {name='" + tag.getName() + "'} already exists");
-      throw new ResourceAlreadyExistExcepton(
-          messageSource.getMessage(
-              "message.repository.tagNameExists",
-              new Object[] {tag.getName()},
-              LocaleContextHolder.getLocale()));
+      throw getExceptionForTagNameAlreadyExist(tag.getName());
     }
-  }
-
-  /**
-   * Create new tags
-   *
-   * @param tags list of the tags to create
-   * @return ids of the created tags
-   */
-  public int[] create(List<Tag> tags) {
-    int[] ids = new int[tags.size()];
-    IntStream.range(0, tags.size())
-        .forEach(
-            index -> {
-              try {
-                ids[index] = create(tags.get(index));
-              } catch (ResourceAlreadyExistExcepton e) {
-                ids[index] = find(tags.get(index).getName()).get().getId();
-              }
-            });
-    return ids;
   }
 
   /**
@@ -83,20 +58,13 @@ public class TagRepository {
    *
    * @param id id of the tag to delete
    */
-  public void delete(int id) {
+  public void delete(Long id) {
     Tag tag = entityManager.find(Tag.class, id);
     if (Objects.nonNull(tag)) {
       entityManager.getTransaction().begin();
       entityManager.remove(tag);
       entityManager.getTransaction().commit();
-    } else {
-      logger.error("Tag {id=" + id + "} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.tagIdNotExists",
-              new Object[] {id},
-              LocaleContextHolder.getLocale()));
-    }
+    } else throw getExceptionForTagIdNotExist(null, id);
   }
 
   /**
@@ -106,20 +74,14 @@ public class TagRepository {
    * @param name name of the tag to find
    * @return founded tag
    */
-  public Optional<Tag> find(String name) {
+  public Tag findByName(String name) {
     try {
-      return Optional.of(
-          entityManager
-              .createQuery(TagSQL.FIND_BY_NAME, Tag.class)
-              .setParameter(TableField.NAME, name)
-              .getSingleResult());
+      return entityManager
+          .createNamedQuery(NamedQueriesKeys.TAG_FIND_BY_NAME, Tag.class)
+          .setParameter(TableField.NAME, name)
+          .getSingleResult();
     } catch (NoResultException e) {
-      logger.error("Tag {name='" + name + "'} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.tagNameNotExists",
-              new Object[] {name},
-              LocaleContextHolder.getLocale()));
+      throw getExceptionForTagNameNotExist(e, name);
     }
   }
 
@@ -130,17 +92,10 @@ public class TagRepository {
    * @param id id of the tag to find
    * @return founded tag
    */
-  public Optional<Tag> findById(int id) {
-    try {
-      return Optional.of(entityManager.find(Tag.class, id));
-    } catch (NoResultException e) {
-      logger.error("Tag {id='" + id + "'} does not exist");
-      throw new ResourceNotFoundException(
-          messageSource.getMessage(
-              "message.repository.tagIdNotExists",
-              new Object[] {id},
-              LocaleContextHolder.getLocale()));
-    }
+  public Tag findById(Long id) {
+    Tag tag = entityManager.find(Tag.class, id);
+    if (Objects.nonNull(tag)) return tag;
+    else throw getExceptionForTagIdNotExist(null, id);
   }
 
   /**
@@ -149,6 +104,37 @@ public class TagRepository {
    * @return list of all existing tags
    */
   public List<Tag> findAll() {
-    return entityManager.createQuery(TagSQL.FIND_ALL, Tag.class).getResultList();
+    return entityManager.createNamedQuery(NamedQueriesKeys.TAG_FIND_ALL, Tag.class).getResultList();
+  }
+
+  public List<Tag> findExistingTags(Set<Tag> tags) {
+    return entityManager
+        .createNativeQuery(TagSQL.GET_QUERY_TO_FIND_EXISTING_TAGS(tags), Tag.class)
+        .getResultList();
+  }
+
+  private ResourceAlreadyExistExcepton getExceptionForTagNameAlreadyExist(String name) {
+    logger.error("Tag {name='" + name + "'} already exists");
+    throw new ResourceAlreadyExistExcepton(
+        messageSource.getMessage(
+            MessagesKeys.TAG_NAME_ALREADY_EXIST,
+            new Object[] {name},
+            LocaleContextHolder.getLocale()));
+  }
+
+  private ResourceNotFoundException getExceptionForTagIdNotExist(NoResultException e, Long id) {
+    logger.error("Tag {id=" + id + "} does not exist");
+    throw new ResourceNotFoundException(
+        messageSource.getMessage(
+            MessagesKeys.TAG_ID_NOT_EXIST, new Object[] {id}, LocaleContextHolder.getLocale()));
+  }
+
+  private ResourceNotFoundException getExceptionForTagNameNotExist(
+      NoResultException e, String name) {
+    logger.error("Tag {name='" + name + "'} does not exist");
+    throw new ResourceNotFoundException(
+        messageSource.getMessage(
+            MessagesKeys.TAG_NAME_NOT_EXIST, new Object[] {name}, LocaleContextHolder.getLocale()),
+        e);
   }
 }

@@ -1,4 +1,4 @@
-package com.epam.esm.controller.certificate;
+package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.service.CertificateService;
@@ -30,7 +30,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RestController
 @RequestMapping(value = "/certificate")
 public class CertificateController {
-  private static final Logger logger = Logger.getLogger(CertificateController.class);
   private final CertificateService certificateService;
   private final Pagination pagination;
   private final CertificateHateoas certificateHateoas;
@@ -60,7 +59,7 @@ public class CertificateController {
    * @return return ResponseEntity containing only http status (without body)
    */
   @PutMapping(value = "/{id}")
-  public ResponseEntity<Void> update(@RequestBody CertificateDto certificateDto, @PathVariable("id") int id) {
+  public ResponseEntity<Void> update(@RequestBody CertificateDto certificateDto, @PathVariable("id") Long id) {
     certificateService.update(certificateDto, id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
@@ -71,7 +70,7 @@ public class CertificateController {
    * @return ResponseEntity containing only http status (without body)
    */
   @DeleteMapping(value = "/{id}")
-  public ResponseEntity<Void> delete(@PathVariable("id") int id) {
+  public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
     certificateService.delete(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }

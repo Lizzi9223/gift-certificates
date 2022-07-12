@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 /** Spring configuration for service layer */
 @Configuration
 @ComponentScan("com.epam.esm")
-public class ProdServiceConfig {
+public class ServiceConfig {
   @Bean
   public ModelMapper modelMapper() {
     return new ModelMapper();

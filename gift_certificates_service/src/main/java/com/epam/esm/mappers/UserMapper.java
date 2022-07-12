@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ComponentScan("com.epam.esm")
 public class UserMapper {
-  private static final Logger logger = Logger.getLogger(UserMapper.class);
   private final ModelMapper modelMapper;
 
   @Autowired

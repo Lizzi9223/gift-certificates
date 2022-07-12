@@ -20,7 +20,6 @@ import org.springframework.util.CollectionUtils;
 @Component
 @ComponentScan("com.epam.esm")
 public class DtoValidator {
-  private static final Logger logger = Logger.getLogger(DtoValidator.class);
   private final Validator validator;
 
   @Autowired

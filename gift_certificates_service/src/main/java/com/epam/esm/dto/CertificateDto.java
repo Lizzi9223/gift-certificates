@@ -20,7 +20,7 @@ import org.springframework.hateoas.RepresentationModel;
  * @version 1.0
  */
 public class CertificateDto extends RepresentationModel<CertificateDto>{
-  private int id;
+  private Long id;
 
   @NotBlank(groups = CreateInfo.class, message = "Name should not be blank")
   @Size(
@@ -54,24 +54,7 @@ public class CertificateDto extends RepresentationModel<CertificateDto>{
   public CertificateDto() {}
 
   public CertificateDto(
-      String name,
-      String description,
-      BigDecimal price,
-      int duration,
-      LocalDateTime createDate,
-      LocalDateTime lastUpdateDate,
-      List<TagDto> tags) {
-    this.name = name;
-    this.description = description;
-    this.price = price;
-    this.duration = duration;
-    this.createDate = createDate;
-    this.lastUpdateDate = lastUpdateDate;
-    this.tags = tags;
-  }
-
-  public CertificateDto(
-      int id,
+      Long id,
       String name,
       String description,
       BigDecimal price,
@@ -89,11 +72,11 @@ public class CertificateDto extends RepresentationModel<CertificateDto>{
     this.tags = tags;
   }
 
-  public int getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -155,22 +138,27 @@ public class CertificateDto extends RepresentationModel<CertificateDto>{
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
     CertificateDto that = (CertificateDto) o;
-    return id == that.id
-        && duration == that.duration
-        && Objects.equals(name, that.name)
-        && Objects.equals(description, that.description)
-        && Objects.equals(price, that.price)
-        && Objects.equals(createDate, that.createDate)
-        && Objects.equals(lastUpdateDate, that.lastUpdateDate)
+    return duration == that.duration && Objects.equals(id, that.id)
+        && Objects.equals(name, that.name) && Objects.equals(description,
+        that.description) && Objects.equals(price, that.price) && Objects.equals(
+        createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate)
         && Objects.equals(tags, that.tags);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate, tags);
+    return Objects.hash(super.hashCode(), id, name, description, price, duration, createDate,
+        lastUpdateDate, tags);
   }
 
   @Override

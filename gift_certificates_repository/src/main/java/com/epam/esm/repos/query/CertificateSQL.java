@@ -2,7 +2,6 @@ package com.epam.esm.repos.query;
 
 import com.epam.esm.search.model.SearchCriteria;
 import java.util.Objects;
-import org.apache.log4j.Logger;
 
 /**
  * Contains SQL queries for operations with gift_certificate table
@@ -11,9 +10,6 @@ import org.apache.log4j.Logger;
  * @version 1.0
  */
 public final class CertificateSQL {
-  private static final Logger logger = Logger.getLogger(CertificateSQL.class);
-  public static final String FIND_BY_NAME = "from gift_certificate where name = :name";
-
   /**
    * Returns select query for certificates
    *
@@ -23,7 +19,8 @@ public final class CertificateSQL {
   public static String GET_FIND_QUERY(SearchCriteria searchCriteria) {
     StringBuilder findQuery = new StringBuilder();
     findQuery.append(
-        "select distinct gift_certificate.id, gift_certificate.name, description, price, duration, create_date, last_update_date from gift_certificate \n"
+        "select distinct gift_certificate.id, gift_certificate.name, description, price, duration, create_date, last_update_date, "
+            + "gift_certificate.operation, gift_certificate.timestamp from gift_certificate \n"
             + "left outer join gift_certificate_has_tag on gift_certificate.id=gift_certificate_has_tag.gift_certificate_id\n"
             + "left outer join tag on tag.id=gift_certificate_has_tag.tag_id");
     boolean isWhereClauseAdded = false;

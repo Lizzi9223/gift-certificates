@@ -3,7 +3,7 @@ package com.epam.esm.utils.hateoas;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import com.epam.esm.controller.tag.TagController;
+import com.epam.esm.controller.TagController;
 import com.epam.esm.dto.TagDto;
 import org.springframework.stereotype.Component;
 

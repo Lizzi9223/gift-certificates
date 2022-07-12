@@ -1,4 +1,4 @@
-package com.epam.esm.controller.order;
+package com.epam.esm.exception;
 
 /**
  * Thrown when order does not contain any certificates
