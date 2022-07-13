@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -29,6 +31,10 @@ import javax.persistence.OneToMany;
 public class User extends BaseEntity {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
+  @ManyToOne
+  @JoinColumn(name = "roles_id")
+  private Role role;
+
   private String login;
 
   private String password;
@@ -40,8 +46,9 @@ public class User extends BaseEntity {
 
   public User() {}
 
-  public User(Long id, String login, String password, String name, Set<Order> orders) {
+  public User(Long id, Role role, String login, String password, String name, Set<Order> orders) {
     this.id = id;
+    this.role = role;
     this.login = login;
     this.password = password;
     this.name = name;
@@ -54,6 +61,14 @@ public class User extends BaseEntity {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
   }
 
   public String getLogin() {
@@ -113,20 +128,13 @@ public class User extends BaseEntity {
 
   @Override
   public String toString() {
-    return "User{"
-        + "id="
-        + id
-        + ", login='"
-        + login
-        + '\''
-        + ", password='"
-        + password
-        + '\''
-        + ", name='"
-        + name
-        + '\''
-        + ", orders="
-        + orders
-        + '}';
+    return "User{" +
+        "id=" + id +
+        ", role=" + role +
+        ", login='" + login + '\'' +
+        ", password='" + password + '\'' +
+        ", name='" + name + '\'' +
+        ", orders=" + orders +
+        '}';
   }
 }

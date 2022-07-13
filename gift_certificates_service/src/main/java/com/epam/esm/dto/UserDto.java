@@ -2,6 +2,7 @@ package com.epam.esm.dto;
 
 import java.util.Objects;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -13,6 +14,9 @@ import org.springframework.hateoas.RepresentationModel;
  */
 public class UserDto extends RepresentationModel<UserDto> {
   private Long id;
+
+  @NotNull
+  private String roleName;
 
   @NotBlank(message = "Login should not be blank")
   @Size(min = 2, max = 20, message = "Login length should be between 2 and 20")
@@ -28,8 +32,9 @@ public class UserDto extends RepresentationModel<UserDto> {
 
   public UserDto() {}
 
-  public UserDto(Long id, String login, String password, String name) {
+  public UserDto(Long id, String roleName, String login, String password, String name) {
     this.id = id;
+    this.roleName = roleName;
     this.login = login;
     this.password = password;
     this.name = name;
@@ -41,6 +46,14 @@ public class UserDto extends RepresentationModel<UserDto> {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public String getRoleName() {
+    return roleName;
+  }
+
+  public void setRoleName(String roleName) {
+    this.roleName = roleName;
   }
 
   public String getLogin() {
@@ -79,30 +92,25 @@ public class UserDto extends RepresentationModel<UserDto> {
       return false;
     }
     UserDto userDto = (UserDto) o;
-    return Objects.equals(id, userDto.id) && Objects.equals(login, userDto.login)
+    return Objects.equals(id, userDto.id) && Objects.equals(roleName,
+        userDto.roleName) && Objects.equals(login, userDto.login)
         && Objects.equals(password, userDto.password) && Objects.equals(name,
         userDto.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), id, login, password, name);
+    return Objects.hash(super.hashCode(), id, roleName, login, password, name);
   }
 
   @Override
   public String toString() {
-    return "UserDto{"
-        + "id="
-        + id
-        + ", login='"
-        + login
-        + '\''
-        + ", password='"
-        + password
-        + '\''
-        + ", name='"
-        + name
-        + '\''
-        + '}';
+    return "UserDto{" +
+        "id=" + id +
+        ", roleName='" + roleName + '\'' +
+        ", login='" + login + '\'' +
+        ", password='" + password + '\'' +
+        ", name='" + name + '\'' +
+        '}';
   }
 }
