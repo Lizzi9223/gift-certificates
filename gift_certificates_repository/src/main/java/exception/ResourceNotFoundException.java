@@ -1,4 +1,4 @@
-package com.epam.esm.exception;
+package exception;
 
 /**
  * Thrown when this object does not exist in database

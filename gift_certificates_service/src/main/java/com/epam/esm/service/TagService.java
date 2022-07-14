@@ -35,10 +35,10 @@ public class TagService {
    * @param tagDto tag to create
    * @return id of the created tag
    */
-  public Long create(TagDto tagDto) {
+  public void create(TagDto tagDto) {
     dtoValidator.validate(tagDto, CreateInfo.class);
     Tag tag = tagMapper.convertToEntity(tagDto);
-    return tagRepository.create(tag);
+    tagRepository.create(tag);
   }
 
   /**

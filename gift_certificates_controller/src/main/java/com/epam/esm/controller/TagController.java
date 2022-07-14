@@ -50,7 +50,7 @@ public class TagController {
    * @return return ResponseEntity containing only http status (without body)
    */
   @PostMapping
-  public ResponseEntity<Void> create(@RequestBody TagDto tagDto) { // throws ResourceAlreadyExistExcepton
+  public ResponseEntity<Void> create(@RequestBody TagDto tagDto) {
     tagService.create(tagDto);
     return new ResponseEntity<>(HttpStatus.OK);
   }

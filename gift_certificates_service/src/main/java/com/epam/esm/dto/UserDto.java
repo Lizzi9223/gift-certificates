@@ -1,5 +1,8 @@
 package com.epam.esm.dto;
 
+import com.epam.esm.validator.group.Authorization;
+import com.epam.esm.validator.group.CreateInfo;
+import com.epam.esm.validator.group.UpdateInfo;
 import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,26 +18,54 @@ import org.springframework.hateoas.RepresentationModel;
 public class UserDto extends RepresentationModel<UserDto> {
   private Long id;
 
-  @NotNull
-  private String roleName;
+  @NotNull(
+      groups = {CreateInfo.class, UpdateInfo.class},
+      message = "Role for user is not chosen")
+  private Long roleId;
 
-  @NotBlank(message = "Login should not be blank")
-  @Size(min = 2, max = 20, message = "Login length should be between 2 and 20")
+  @NotNull(groups = Authorization.class, message = "Enter login")
+  @NotBlank(
+      groups = {CreateInfo.class, UpdateInfo.class},
+      message = "Login should not be blank")
+  @Size(
+      groups = {CreateInfo.class, UpdateInfo.class},
+      min = 2,
+      max = 20,
+      message = "Login length should be between 2 and 20")
   private String login;
 
-  @NotBlank(message = "Password should not be blank")
-  @Size(min = 2, max = 20, message = "Password length should be between 2 and 20")
+  @NotNull(groups = Authorization.class, message = "Enter password")
+  @NotBlank(
+      groups = {CreateInfo.class, UpdateInfo.class},
+      message = "Password should not be blank")
+  @Size(
+      groups = {CreateInfo.class, UpdateInfo.class},
+      min = 2,
+      max = 20,
+      message = "Password length should be between 2 and 20")
   private String password;
 
-  @NotBlank(message = "Name should not be blank")
-  @Size(min = 2, max = 20, message = "Name length should be between 2 and 20")
+  @NotBlank(
+      groups = {CreateInfo.class, UpdateInfo.class},
+      message = "Name should not be blank")
+  @Size(
+      groups = {CreateInfo.class, UpdateInfo.class},
+      min = 2,
+      max = 20,
+      message = "Name length should be between 2 and 20")
   private String name;
 
   public UserDto() {}
 
-  public UserDto(Long id, String roleName, String login, String password, String name) {
+  public UserDto(String login, String password, String name) {
+    this.login = login;
+    this.password = password;
+    this.name = name;
+  }
+
+  public UserDto(Long id, Long roleId, String login, String password, String name) {
     this.id = id;
-    this.roleName = roleName;
+    this.roleId = roleId;
     this.login = login;
     this.password = password;
     this.name = name;
@@ -48,12 +79,12 @@ public class UserDto extends RepresentationModel<UserDto> {
     this.id = id;
   }
 
-  public String getRoleName() {
-    return roleName;
+  public Long getRoleId() {
+    return roleId;
   }
 
-  public void setRoleName(String roleName) {
-    this.roleName = roleName;
+  public void setRoleId(Long roleId) {
+    this.roleId = roleId;
   }
 
   public String getLogin() {
@@ -92,25 +123,35 @@ public class UserDto extends RepresentationModel<UserDto> {
       return false;
     }
     UserDto userDto = (UserDto) o;
-    return Objects.equals(id, userDto.id) && Objects.equals(roleName,
-        userDto.roleName) && Objects.equals(login, userDto.login)
-        && Objects.equals(password, userDto.password) && Objects.equals(name,
-        userDto.name);
+    return Objects.equals(id, userDto.id)
+        && Objects.equals(roleId, userDto.roleId)
+        && Objects.equals(login, userDto.login)
+        && Objects.equals(password, userDto.password)
+        && Objects.equals(name, userDto.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), id, roleName, login, password, name);
+    return Objects.hash(super.hashCode(), id, roleId, login, password, name);
   }
 
   @Override
   public String toString() {
-    return "UserDto{" +
-        "id=" + id +
-        ", roleName='" + roleName + '\'' +
-        ", login='" + login + '\'' +
-        ", password='" + password + '\'' +
-        ", name='" + name + '\'' +
-        '}';
+    return "UserDto{"
+        + "id="
+        + id
+        + ", roleId='"
+        + roleId
+        + '\''
+        + ", login='"
+        + login
+        + '\''
+        + ", password='"
+        + password
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + '}';
   }
 }

@@ -10,4 +10,5 @@ public interface TableField {
   String ID = "id";
   String NAME = "name";
   String LOGIN = "login";
+  String PASSWORD = "password";
 }

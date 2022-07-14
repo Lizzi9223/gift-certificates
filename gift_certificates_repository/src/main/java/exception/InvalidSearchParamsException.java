@@ -1,4 +1,4 @@
-package com.epam.esm.exception;
+package exception;
 
 /**
  * Thrown when search params are not valid

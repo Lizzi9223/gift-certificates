@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 @Component
 @ComponentScan("com.epam.esm")
 public class DtoValidator {
+  private static final Logger logger = Logger.getLogger(DtoValidator.class);
   private final Validator validator;
 
   @Autowired
@@ -43,7 +44,11 @@ public class DtoValidator {
 
     if (!CollectionUtils.isEmpty(violations)) {
       String className = obj.getClass().getSimpleName();
-      String message =
+      String userMessage =
+          violations.stream()
+              .map(violation -> violation.getMessage())
+              .collect(Collectors.joining("; "));
+      String logMessage =
           "Invalid object: "
               + violations.stream()
                   .map(
@@ -53,8 +58,9 @@ public class DtoValidator {
                               + violation.getPropertyPath()
                               + " - "
                               + violation.getMessage()))
-                  .collect(Collectors.joining(";"));
-      throw new ValidationException(message);
+                  .collect(Collectors.joining("; "));
+      logger.error(logMessage);
+      throw new ValidationException(userMessage);
     }
   }
 }

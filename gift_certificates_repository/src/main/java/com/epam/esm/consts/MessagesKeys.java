@@ -1,7 +1,7 @@
 package com.epam.esm.consts;
 
 /**
- * Class with strings that contain keys to messages properties
+ * Class with strings that contain keys to message properties
  *
  * @author Lizaveta Yakauleva
  * @version 1.0
@@ -17,5 +17,7 @@ public interface MessagesKeys {
   String USER_ID_NOT_EXIST = "message.repository.userIdNotExists";
   String ORDER_ID_NOT_EXIST = "message.repository.orderIdNotExists";
   String USER_LOGIN_NOT_EXIST = "message.repository.userLoginNotExists";
+  String USER_LOGIN_ALREADY_EXIST = "message.repository.userLoginExists";
   String INVALID_SEARCH_PARAMS = "message.repository.invalidSearchParams";
+  String ROLE_NAME_NOT_EXIST = "message.repository.roleNameNotExists";
 }

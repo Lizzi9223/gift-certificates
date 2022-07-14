@@ -3,7 +3,7 @@ package com.epam.esm.repos;
 import com.epam.esm.consts.MessagesKeys;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Order;
-import com.epam.esm.exception.ResourceNotFoundException;
+import exception.ResourceNotFoundException;
 import com.epam.esm.repos.metadata.TableField;
 import java.util.List;
 import java.util.Objects;

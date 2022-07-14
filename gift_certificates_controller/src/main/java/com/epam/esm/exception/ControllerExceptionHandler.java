@@ -1,5 +1,8 @@
 package com.epam.esm.exception;
 
+import exception.InvalidSearchParamsException;
+import exception.ResourceAlreadyExistExcepton;
+import exception.ResourceNotFoundException;
 import javax.validation.ValidationException;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;

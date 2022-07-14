@@ -25,6 +25,8 @@ import javax.persistence.OneToMany;
 @NamedQueries({
     @NamedQuery(name = NamedQueriesKeys.USER_FIND_BY_LOGIN,
         query = "SELECT u FROM users u WHERE u.login = :login"),
+    @NamedQuery(name = NamedQueriesKeys.USER_FIND_BY_LOGIN_AND_PASSWORD,
+        query = "SELECT u FROM users u WHERE u.login = :login and u.password = :password"),
     @NamedQuery(name = NamedQueriesKeys.USER_FIND_ALL,
         query = "SELECT u FROM users u")
 })

@@ -3,8 +3,8 @@ package com.epam.esm.repos;
 import com.epam.esm.consts.MessagesKeys;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.exception.ResourceAlreadyExistExcepton;
-import com.epam.esm.exception.ResourceNotFoundException;
+import exception.ResourceAlreadyExistExcepton;
+import exception.ResourceNotFoundException;
 import com.epam.esm.repos.metadata.TableField;
 import com.epam.esm.repos.query.TagSQL;
 import java.util.List;
@@ -40,12 +40,11 @@ public class TagRepository {
    * @param tag tag to create
    * @return id of the created tag
    */
-  public Long create(Tag tag) {
+  public void create(Tag tag) {
     try {
       entityManager.getTransaction().begin();
       entityManager.persist(tag);
       entityManager.getTransaction().commit();
-      return tag.getId();
     } catch (PersistenceException e) {
       entityManager.getTransaction().rollback();
       throw getExceptionForTagNameAlreadyExist(tag.getName());
