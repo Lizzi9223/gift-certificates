@@ -8,17 +8,22 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class UserDetailsImpl implements UserDetails {
-
   private String login;
   private String password;
   private Collection<? extends GrantedAuthority> grantedAuthorities;
 
-  public static UserDetailsImpl fromUserEntityToCustomUserDetails(User userEntity) {
-    UserDetailsImpl c = new UserDetailsImpl();
-    c.login = userEntity.getLogin();
-    c.password = userEntity.getPassword();
-    c.grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(userEntity.getRole().getName()));
-    return c;
+  public UserDetailsImpl(
+      String login, String password, Collection<? extends GrantedAuthority> grantedAuthorities) {
+    this.login = login;
+    this.password = password;
+    this.grantedAuthorities = grantedAuthorities;
+  }
+
+  public static UserDetails fromUserEntityToUserDetails(User userEntity) {
+    return new UserDetailsImpl(
+        userEntity.getLogin(),
+        userEntity.getPassword(),
+        Collections.singletonList(new SimpleGrantedAuthority(userEntity.getRole().getName())));
   }
 
   @Override

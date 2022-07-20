@@ -1,6 +1,5 @@
 package com.epam.esm.service;
 
-import com.epam.esm.consts.MessageKeysService;
 import com.epam.esm.consts.UserRoles;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.entity.Role;
@@ -10,7 +9,6 @@ import com.epam.esm.repos.RoleRepository;
 import com.epam.esm.repos.UserRepository;
 import com.epam.esm.security.UserDetailsImpl;
 import com.epam.esm.validator.DtoValidator;
-import com.epam.esm.validator.group.Authorization;
 import com.epam.esm.validator.group.CreateInfo;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -18,11 +16,9 @@ import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,14 +57,25 @@ public class UserService implements UserDetailsService {
     this.messageSource = messageSource;
   }
 
+  /**
+   * Implementation of loadUserByUsername method defined in UserDetailsService interface
+   *
+   * @param login login of the user to find
+   * @return founded user
+   */
   @Override
-  public UserDetailsImpl loadUserByUsername(String login) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String login) {
     User user = userRepository.find(login);
-    return UserDetailsImpl.fromUserEntityToCustomUserDetails(user);
+    return UserDetailsImpl.fromUserEntityToUserDetails(user);
   }
 
+  /**
+   * Creates new user with role user only
+   *
+   * @param userDto user to create
+   */
   public void saveUser(UserDto userDto) {
-    Role role = roleRepository.findByName(String.valueOf(UserRoles.USER));
+    Role role = roleRepository.findByName(UserRoles.USER.toString());
     userDto.setRoleId(role.getId());
     dtoValidator.validate(userDto, CreateInfo.class);
     userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -76,21 +83,8 @@ public class UserService implements UserDetailsService {
     userRepository.create(user);
   }
 
-  public UserDto findByLoginAndPassword(UserDto userDto) {
-    dtoValidator.validate(userDto, Authorization.class);
-    User user = userRepository.find(userDto.getLogin());
-    if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-      return userMapper.convertToDto(user);
-    } else {
-      logger.error("Authorization failed");
-      throw new BadCredentialsException( // TODO: is it OK to throw this exception?
-          messageSource.getMessage(
-              MessageKeysService.AUTH_FAILED, new Object[] {}, LocaleContextHolder.getLocale()));
-    }
-  }
-
   /**
-   * Searches for user by name
+   * Searches for user by login
    *
    * @param login login of the user to find
    * @return founded userDto
@@ -118,7 +112,7 @@ public class UserService implements UserDetailsService {
   public Long findUserWithHighestOrdersCost() {
     List<User> users = userRepository.findAll();
     Map<Long, BigDecimal> totalCosts = new HashMap<>();
-    users.forEach(u -> totalCosts.put(u.getId(), orderService.countUserAllOrdersCost(u.getId())));
+    users.forEach(user -> totalCosts.put(user.getId(), orderService.countUserAllOrdersCost(user.getId())));
     Map.Entry<Long, BigDecimal> maxEntry = null;
     for (Map.Entry<Long, BigDecimal> entry : totalCosts.entrySet()) {
       if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {

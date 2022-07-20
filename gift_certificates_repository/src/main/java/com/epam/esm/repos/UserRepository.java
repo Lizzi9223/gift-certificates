@@ -4,7 +4,7 @@ import com.epam.esm.consts.MessagesKeys;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.User;
 import com.epam.esm.repos.metadata.TableField;
-import exception.ResourceNotFoundException;
+import exception.RepositoryException;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.EntityManager;
@@ -30,6 +30,12 @@ public class UserRepository {
     this.messageSource = messageSource;
   }
 
+  /**
+   * Creates new user
+   *
+   * @param user user to create
+   * @throws RepositoryException when provided login already exists
+   */
   public void create(User user) {
     try {
       entityManager.getTransaction().begin();
@@ -47,6 +53,7 @@ public class UserRepository {
    *
    * @param login name of the user to search for
    * @return founded user
+   * @throws RepositoryException when user is not found
    */
   public User find(String login) {
     try {
@@ -65,6 +72,7 @@ public class UserRepository {
    *
    * @param id id of the user to search for
    * @return founded user
+   * @throws RepositoryException when user is not found
    */
   public User find(Long id) {
     User user = entityManager.find(User.class, id);
@@ -83,10 +91,9 @@ public class UserRepository {
         .getResultList();
   }
 
-  private ResourceNotFoundException getExceptionForUserLoginNotExist(
-      NoResultException e, String login) {
+  private RepositoryException getExceptionForUserLoginNotExist(NoResultException e, String login) {
     logger.error("User {login='" + login + "'} does not exist");
-    throw new ResourceNotFoundException(
+    throw new RepositoryException(
         messageSource.getMessage(
             MessagesKeys.USER_LOGIN_NOT_EXIST,
             new Object[] {login},
@@ -94,22 +101,24 @@ public class UserRepository {
         e);
   }
 
-  private ResourceNotFoundException getExceptionForUserLoginAlreadyExists(
+  private RepositoryException getExceptionForUserLoginAlreadyExists(
       PersistenceException e, String login) {
-    logger.error("User {login='" + login + "'} already exists");
-    throw new ResourceNotFoundException(
+    logger.error("Attempt to create user with login '" + login + "' got error: " + e.getCause());
+    throw new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.USER_LOGIN_ALREADY_EXIST,
+            MessagesKeys.USER_CREATION_FAILED,
             new Object[] {login},
             LocaleContextHolder.getLocale()),
         e);
   }
 
-  private ResourceNotFoundException getExceptionForUserIdNotExist(NoResultException e, Long id) {
+  private RepositoryException getExceptionForUserIdNotExist(NoResultException e, Long id) {
     logger.error("User {id ='" + id + "'} does not exist");
-    throw new ResourceNotFoundException(
+    throw new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.USER_ID_NOT_EXIST, new Object[] {id}, LocaleContextHolder.getLocale()),
+            MessagesKeys.USER_ID_NOT_EXIST,
+            new Object[] {id.toString()},
+            LocaleContextHolder.getLocale()),
         e);
   }
 }

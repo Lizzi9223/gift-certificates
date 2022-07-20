@@ -2,8 +2,6 @@ package com.epam.esm.service;
 
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.mappers.TagMapper;
-import com.epam.esm.repos.TagRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +16,7 @@ public class MostWidelyUsedTagService {
 
   @Autowired
   public MostWidelyUsedTagService(
-      TagRepository tagRepository,
-      TagMapper tagMapper,
-      UserService userService,
-      OrderService orderService,
-      TagService tagService) {
+      UserService userService, OrderService orderService, TagService tagService) {
     this.userService = userService;
     this.orderService = orderService;
     this.tagService = tagService;
@@ -37,20 +31,20 @@ public class MostWidelyUsedTagService {
     List<OrderDto> orderDtos = orderService.findByUserId(userId);
     Map<Long, Integer> tagsCount = new HashMap<>();
     orderDtos.forEach(
-        o -> {
-          o.getCertificates()
+        orderDto -> {
+          orderDto.getCertificates()
               .forEach(
-                  c -> {
-                    c.getTags()
+                  certificate -> {
+                    certificate.getTags()
                         .forEach(
-                            t -> {
-                              tagsCount.put(t.getId(), tagsCount.getOrDefault(t.getId(), 0) + 1);
+                            tag -> {
+                              tagsCount.put(tag.getId(), tagsCount.getOrDefault(tag.getId(), 0) + 1);
                             });
                   });
         });
     Long tagId =
         tagsCount.entrySet().stream()
-            .max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1)
+            .max((tagFirst, tagSecond) -> tagFirst.getValue() > tagSecond.getValue() ? 1 : -1)
             .get()
             .getKey();
     return tagService.findById(tagId);

@@ -5,7 +5,8 @@ import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Order;
-import com.epam.esm.exception.OrderIsEmptyException;
+import com.epam.esm.entity.User;
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.mappers.CertificateMapper;
 import com.epam.esm.mappers.OrderMapper;
 import com.epam.esm.repos.CertificateRepository;
@@ -66,6 +67,7 @@ public class OrderService {
    * Validation is provided <br>
    *
    * @param orderDto order to create
+   * @throws ServiceException when no certificates attached to the order
    */
   public void create(OrderDto orderDto, Long userId) {
     if (Objects.isNull(orderDto.getCertificates()) || orderDto.getCertificates().size() == 0)
@@ -134,6 +136,7 @@ public class OrderService {
    * @return founded orderDto list
    */
   public List<OrderDto> findByUserId(Long userId) {
+    userRepository.find(userId);
     List<Order> orders = orderRepository.findAllUserOrders(userId);
     return orderMapper.convertToDto(orders);
   }
@@ -154,9 +157,9 @@ public class OrderService {
     return totalCost;
   }
 
-  private OrderIsEmptyException getOrderIsEmptyException() {
+  private ServiceException getOrderIsEmptyException() {
     logger.error("Order is empty");
-    throw new OrderIsEmptyException(
+    throw new ServiceException(
         messageSource.getMessage(
             MessageKeysService.EMPTY_ORDER, new Object[] {}, LocaleContextHolder.getLocale()));
   }

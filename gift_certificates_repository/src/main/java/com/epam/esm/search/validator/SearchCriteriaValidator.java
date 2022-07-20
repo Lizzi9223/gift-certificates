@@ -3,7 +3,6 @@ package com.epam.esm.search.validator;
 import com.epam.esm.search.enums.SortType;
 import com.epam.esm.search.model.SearchCriteria;
 import java.util.Objects;
-import org.apache.log4j.Logger;
 
 /**
  * Search criteria validator
@@ -12,7 +11,6 @@ import org.apache.log4j.Logger;
  * @version 1.0
  */
 public class SearchCriteriaValidator {
-  private static final Logger logger = Logger.getLogger(SearchCriteriaValidator.class);
 
   private SearchCriteriaValidator() {}
 
@@ -29,7 +27,8 @@ public class SearchCriteriaValidator {
   }
 
   public static boolean isValidSortType(String sortType) {
-    if(Objects.nonNull(sortType) && Objects.isNull(SortType.getEnumByValue(sortType))) return false;
+    if (Objects.nonNull(sortType) && Objects.isNull(SortType.getEnumByValue(sortType)))
+      return false;
     return true;
   }
 }

@@ -1,10 +1,17 @@
 package com.epam.esm.exception;
 
-import exception.InvalidSearchParamsException;
-import exception.ResourceAlreadyExistExcepton;
-import exception.ResourceNotFoundException;
+import static com.epam.esm.consts.CommonConstants.ExceptionCode.AUTH_CODE;
+import static com.epam.esm.consts.CommonConstants.ExceptionCode.CERTIFICATE_CODE;
+import static com.epam.esm.consts.CommonConstants.ExceptionCode.ORDER_CODE;
+import static com.epam.esm.consts.CommonConstants.ExceptionCode.TAG_CODE;
+import static com.epam.esm.consts.CommonConstants.ExceptionCode.USER_CODE;
+import static com.epam.esm.consts.CommonConstants.URL.CERTIFICATE;
+import static com.epam.esm.consts.CommonConstants.URL.ORDER;
+import static com.epam.esm.consts.CommonConstants.URL.TAG;
+import static org.hibernate.cfg.AvailableSettings.USER;
+
+import exception.RepositoryException;
 import javax.validation.ValidationException;
-import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -24,35 +31,15 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  */
 @RestControllerAdvice
 public class ControllerExceptionHandler {
-  private static final Logger logger = Logger.getLogger(ControllerExceptionHandler.class);
 
-  @ExceptionHandler({ResourceNotFoundException.class})
+  @ExceptionHandler({
+    RepositoryException.class,
+    ServiceException.class,
+    NoHandlerFoundException.class,
+    ValidationException.class
+  })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponse handleResourceNotFoundException(Exception e, WebRequest request) {
-    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
-  }
-
-  @ExceptionHandler({ResourceAlreadyExistExcepton.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponse handleResourceAlreadyExistExcepton(Exception e, WebRequest request) {
-    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
-  }
-
-  @ExceptionHandler({InvalidSearchParamsException.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponse handlerInvalidSearchParamsException(Exception e, WebRequest request) {
-    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
-  }
-
-  @ExceptionHandler({NoHandlerFoundException.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponse handleNoHandlerFoundException(Exception e, WebRequest request) {
-    return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
-  }
-
-  @ExceptionHandler({ValidationException.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponse handlerValidationException(Exception e, WebRequest request) {
+  public ExceptionResponse handleBadRequestExceptions(Exception e, WebRequest request) {
     return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
   }
 
@@ -99,7 +86,7 @@ public class ControllerExceptionHandler {
 
   @ExceptionHandler
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponse handleHttpBadRequestStatus(Exception e, WebRequest request) {
+  public ExceptionResponse handleOtherExceptions(Exception e, WebRequest request) {
     return responseEntityBuilder(e, request, HttpStatus.BAD_REQUEST);
   }
 
@@ -117,20 +104,18 @@ public class ControllerExceptionHandler {
     e.printStackTrace();
     exceptionResponse.setErrorMessage(e.getMessage());
     String errorCode = String.valueOf(httpStatus.value());
-    String CERTIFICATE_CODE = "01";
-    String TAG_CODE = "02";
-    String USER_CODE = "03";
-    String ORDER_CODE = "04";
-    String TAG = "tag";
-    String ORDER = "order";
-    String USER = "user";
     if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(TAG))
       errorCode += TAG_CODE;
     else if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(ORDER))
       errorCode += USER_CODE;
     else if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(USER))
       errorCode += ORDER_CODE;
-    else errorCode += CERTIFICATE_CODE;
+    else if (((ServletWebRequest) request)
+        .getRequest()
+        .getRequestURL()
+        .toString()
+        .contains(CERTIFICATE)) errorCode += CERTIFICATE_CODE;
+    else errorCode += AUTH_CODE;
     exceptionResponse.setErrorCode(errorCode);
     return exceptionResponse;
   }

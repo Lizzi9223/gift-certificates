@@ -92,7 +92,7 @@ public class CertificateController {
       @RequestParam(required = false, name = "sortByDateType") String sortByDateType,
       @RequestParam(required = false, name = "sortByNameType") String sortByNameType,
       @RequestParam(required = true, name = "page") int page,
-      @RequestParam(required = true, name = "pageSize") int pageSize) {
+      @RequestParam(required = true, name = "pageSize") int pageSize){
     List<CertificateDto> certificateDtos = (List<CertificateDto>)
         pagination.paginate(
             certificateService.find(tagNames, name, description, sortByDateType, sortByNameType),

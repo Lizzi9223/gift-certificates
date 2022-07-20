@@ -3,8 +3,8 @@ package com.epam.esm.repos;
 import com.epam.esm.consts.MessagesKeys;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Order;
-import exception.ResourceNotFoundException;
 import com.epam.esm.repos.metadata.TableField;
+import exception.RepositoryException;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.EntityManager;
@@ -43,11 +43,11 @@ public class OrderRepository {
   }
 
   /**
-   * Searches for order with provided id <br>
-   * If order with provided id does not exist, {@code ResourceNotFoundException} is thrown
+   * Searches for order with provided id
    *
    * @param id id of the order to search for
    * @return founded order
+   * @throws RepositoryException when order with provided id is not found
    */
   public Order findById(Long id) {
     Order order = entityManager.find(Order.class, id);
@@ -56,28 +56,25 @@ public class OrderRepository {
   }
 
   /**
-   * Searches for all orders that belong to the user with provided id <br>
-   * *
+   * Searches for all orders that belong to the user with provided id
    *
    * @param id id of the user whose orders to search for
    * @return list of founded orders
    */
   public List<Order> findAllUserOrders(Long id) {
-    try {
-      return entityManager
-          .createNamedQuery(NamedQueriesKeys.ORDER_FIND_BY_USER, Order.class)
-          .setParameter(TableField.ID, id)
-          .getResultList();
-    } catch (NoResultException e) {
-      throw getOrderIdNotExistException(e, id);
-    }
+    return entityManager
+        .createNamedQuery(NamedQueriesKeys.ORDER_FIND_BY_USER, Order.class)
+        .setParameter(TableField.ID, id)
+        .getResultList();
   }
 
-  private ResourceNotFoundException getOrderIdNotExistException(NoResultException e, Long id) {
+  private RepositoryException getOrderIdNotExistException(NoResultException e, Long id) {
     logger.error("Order {id ='" + id + "'} does not exist");
-    return new ResourceNotFoundException(
+    return new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.ORDER_ID_NOT_EXIST, new Object[] {id}, LocaleContextHolder.getLocale()),
+            MessagesKeys.ORDER_ID_NOT_EXIST,
+            new Object[] {id.toString()},
+            LocaleContextHolder.getLocale()),
         e);
   }
 }

@@ -92,10 +92,10 @@ public class CertificateService {
   private void setIdsToTagsIfExists(Set<Tag> tagsToFind) {
     List<Tag> tags = tagRepository.findExistingTags(tagsToFind);
     tagsToFind.forEach(
-        t -> {
+        tagToFind -> {
           tags.forEach(
-              q -> {
-                if (q.equals(t)) t.setId(q.getId());
+              existingTag -> {
+                if (existingTag.equals(tagToFind)) tagToFind.setId(existingTag.getId());
               });
         });
   }

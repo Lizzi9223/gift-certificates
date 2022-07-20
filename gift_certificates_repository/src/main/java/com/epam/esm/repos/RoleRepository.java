@@ -4,7 +4,7 @@ import com.epam.esm.consts.MessagesKeys;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Role;
 import com.epam.esm.repos.metadata.TableField;
-import exception.ResourceNotFoundException;
+import exception.RepositoryException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import org.apache.log4j.Logger;
@@ -38,10 +38,10 @@ public class RoleRepository {
     }
   }
 
-  private ResourceNotFoundException getExceptionForRoleNameNotExist(
+  private RepositoryException getExceptionForRoleNameNotExist(
       NoResultException e, String name) {
     logger.error("Role {name='" + name + "'} does not exist");
-    throw new ResourceNotFoundException(
+    throw new RepositoryException(
         messageSource.getMessage(
             MessagesKeys.ROLE_NAME_NOT_EXIST, new Object[] {name}, LocaleContextHolder.getLocale()),
         e);

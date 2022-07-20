@@ -23,7 +23,6 @@ public class UserDto extends RepresentationModel<UserDto> {
       message = "Role for user is not chosen")
   private Long roleId;
 
-  @NotNull(groups = Authorization.class, message = "Enter login")
   @NotBlank(
       groups = {CreateInfo.class, UpdateInfo.class},
       message = "Login should not be blank")
@@ -34,7 +33,6 @@ public class UserDto extends RepresentationModel<UserDto> {
       message = "Login length should be between 2 and 20")
   private String login;
 
-  @NotNull(groups = Authorization.class, message = "Enter password")
   @NotBlank(
       groups = {CreateInfo.class, UpdateInfo.class},
       message = "Password should not be blank")

@@ -46,7 +46,7 @@ public class DtoValidator {
       String className = obj.getClass().getSimpleName();
       String userMessage =
           violations.stream()
-              .map(violation -> violation.getMessage())
+              .map(ConstraintViolation::getMessage)
               .collect(Collectors.joining("; "));
       String logMessage =
           "Invalid object: "
