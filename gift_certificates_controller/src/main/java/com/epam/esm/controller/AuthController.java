@@ -52,8 +52,11 @@ public class AuthController {
   @PostMapping("/refresh")
   public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request){
     DefaultClaims claims = (io.jsonwebtoken.impl.DefaultClaims) request.getAttribute("claims");
-    Map<String, Object> expectedMap = new HashMap<>(claims);
-    String token = jwtProvider.generateRefreshedToken(expectedMap, expectedMap.get("sub").toString());
+    String token = null;
+    if(Objects.nonNull(claims)){
+      Map<String, Object> expectedMap = new HashMap<>(claims);
+      token = jwtProvider.generateRefreshedToken(expectedMap, expectedMap.get("sub").toString());
+    }
     return new ResponseEntity<>(new AuthResponse(token), HttpStatus.OK);
   }
 }

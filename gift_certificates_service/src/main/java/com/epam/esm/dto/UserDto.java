@@ -1,6 +1,5 @@
 package com.epam.esm.dto;
 
-import com.epam.esm.validator.group.Authorization;
 import com.epam.esm.validator.group.CreateInfo;
 import com.epam.esm.validator.group.UpdateInfo;
 import java.util.Objects;

@@ -31,8 +31,12 @@ public class JwtFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String token = getTokenFromRequest(request);
+    String requestURL = request.getRequestURL().toString();
     try {
       if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
+
+        if (requestURL.contains("refresh")) throw new JwtException("Token is not expired yet");
+
         UserDetails userDetails =
             new UserDetailsImpl(
                 jwtProvider.getLoginFromToken(token), "", jwtProvider.getRolesFromToken(token));
@@ -44,18 +48,24 @@ public class JwtFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
     } catch (ExpiredJwtException e) {
-      String requestURL = request.getRequestURL().toString();
+
       if (requestURL.contains("refresh")) {
+
         if (jwtProvider.isRefreshAvailable(e)) {
           allowForRefreshToken(e, request);
         } else {
           request.setAttribute(
               "exception", new JwtException("Token is not available for refresh yet"));
         }
+
       } else {
         request.setAttribute("exception", e);
       }
+
+    } catch (JwtException e) {
+      request.setAttribute("exception", e);
     }
+
     filterChain.doFilter(request, response);
   }
 
