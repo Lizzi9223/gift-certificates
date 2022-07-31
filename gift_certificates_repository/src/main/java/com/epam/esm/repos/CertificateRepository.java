@@ -1,13 +1,13 @@
 package com.epam.esm.repos;
 
-import com.epam.esm.consts.MessagesKeys;
+import com.epam.esm.consts.MessagesKeysRepos;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repos.metadata.TableField;
 import com.epam.esm.repos.query.CertificateSQL;
 import com.epam.esm.search.model.SearchCriteria;
 import com.epam.esm.search.validator.SearchCriteriaValidator;
-import exception.RepositoryException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -65,7 +65,7 @@ public class CertificateRepository {
   private void prepareCertificateForUpdate(Certificate certificate) {
     Certificate initialCert = findById(certificate.getId());
     if (Objects.isNull(initialCert))
-      throw getExceptionForCertificateIdNotExist(null, certificate.getId());
+      throw getExceptionForCertificateIdNotExist(certificate.getId());
     if (Objects.isNull(certificate.getName())) certificate.setName(initialCert.getName());
     if (Objects.isNull(certificate.getDescription()))
       certificate.setDescription(initialCert.getDescription());
@@ -89,7 +89,7 @@ public class CertificateRepository {
       entityManager.getTransaction().begin();
       entityManager.remove(certificate);
       entityManager.getTransaction().commit();
-    } else throw getExceptionForCertificateIdNotExist(null, id);
+    } else throw getExceptionForCertificateIdNotExist(id);
   }
 
   /**
@@ -119,7 +119,7 @@ public class CertificateRepository {
   public Certificate findById(Long id) {
     Certificate certificate = entityManager.find(Certificate.class, id);
     if (Objects.nonNull(certificate)) return certificate;
-    else throw getExceptionForCertificateIdNotExist(null, id);
+    else throw getExceptionForCertificateIdNotExist(id);
   }
 
   /**
@@ -132,27 +132,27 @@ public class CertificateRepository {
   public List<Certificate> find(SearchCriteria searchCriteria) {
     if (SearchCriteriaValidator.isValid(searchCriteria)) {
       return entityManager
-          .createNativeQuery(CertificateSQL.GET_FIND_QUERY(searchCriteria), Certificate.class)
+          .createNativeQuery(CertificateSQL.getFindQuery(searchCriteria), Certificate.class)
           .getResultList();
     } else throw getInvalidSearchParamsException();
   }
 
-  private RepositoryException getExceptionForCertificateIdNotExist(NoResultException e, Long id) {
-    logger.error("Certificate {id='" + id + "'} does not exist");
+  private RepositoryException getExceptionForCertificateIdNotExist(Long id) {
+    logger.error("Certificate [id='" + id + "'] does not exist");
     return new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.CERTIFICATE_ID_NOT_EXIST,
+            MessagesKeysRepos.CERTIFICATE_ID_NOT_EXIST,
             new Object[] {id.toString()},
             LocaleContextHolder.getLocale()),
-        e);
+        null);
   }
 
   private RepositoryException getExceptionForCertificateNameNotExist(
       NoResultException e, String name) {
-    logger.error("Certificate {name='" + name + "'} does not exist");
+    logger.error("Certificate [name='" + name + "'] does not exist");
     return new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.CERTIFICATE_NAME_NOT_EXIST,
+            MessagesKeysRepos.CERTIFICATE_NAME_NOT_EXIST,
             new Object[] {name},
             LocaleContextHolder.getLocale()),
         e);
@@ -161,10 +161,13 @@ public class CertificateRepository {
   private RepositoryException getExceptionForCertificateNameAlreadyExist(
       PersistenceException e, String name) {
     logger.error(
-        "Attempt to create or update certificate with name" + name + "got error: " + e.getCause());
+        "Attempt to create or update certificate with name='"
+            + name
+            + "' got error: "
+            + e.getCause());
     return new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.CERTIFICATE_CREATION_FAILED,
+            MessagesKeysRepos.CERTIFICATE_CREATION_FAILED,
             new Object[] {name},
             LocaleContextHolder.getLocale()),
         e);
@@ -174,6 +177,6 @@ public class CertificateRepository {
     logger.error("Search certificates parameters are invalid");
     return new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.INVALID_SEARCH_PARAMS, null, LocaleContextHolder.getLocale()));
+            MessagesKeysRepos.INVALID_SEARCH_PARAMS, null, LocaleContextHolder.getLocale()));
   }
 }

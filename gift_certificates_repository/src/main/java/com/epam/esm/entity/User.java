@@ -23,15 +23,18 @@ import javax.persistence.OneToMany;
  */
 @Entity(name = "users")
 @NamedQueries({
-    @NamedQuery(name = NamedQueriesKeys.USER_FIND_BY_LOGIN,
-        query = "SELECT u FROM users u WHERE u.login = :login"),
-    @NamedQuery(name = NamedQueriesKeys.USER_FIND_BY_LOGIN_AND_PASSWORD,
-        query = "SELECT u FROM users u WHERE u.login = :login and u.password = :password"),
-    @NamedQuery(name = NamedQueriesKeys.USER_FIND_ALL,
-        query = "SELECT u FROM users u")
+  @NamedQuery(
+      name = NamedQueriesKeys.USER_FIND_BY_LOGIN,
+      query = "SELECT u FROM users u WHERE u.login = :login"),
+  @NamedQuery(
+      name = NamedQueriesKeys.USER_FIND_BY_LOGIN_AND_PASSWORD,
+      query = "SELECT u FROM users u WHERE u.login = :login and u.password = :password"),
+  @NamedQuery(name = NamedQueriesKeys.USER_FIND_ALL, query = "SELECT u FROM users u")
 })
 public class User extends BaseEntity {
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   @ManyToOne
   @JoinColumn(name = "roles_id")
@@ -130,13 +133,22 @@ public class User extends BaseEntity {
 
   @Override
   public String toString() {
-    return "User{" +
-        "id=" + id +
-        ", role=" + role +
-        ", login='" + login + '\'' +
-        ", password='" + password + '\'' +
-        ", name='" + name + '\'' +
-        ", orders=" + orders +
-        '}';
+    return "User{"
+        + "id="
+        + id
+        + ", role="
+        + role
+        + ", login='"
+        + login
+        + '\''
+        + ", password='"
+        + password
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", orders="
+        + orders
+        + '}';
   }
 }

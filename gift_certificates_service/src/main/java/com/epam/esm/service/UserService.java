@@ -14,9 +14,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,14 +29,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserService implements UserDetailsService {
-  private static final Logger logger = Logger.getLogger(UserService.class);
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final UserMapper userMapper;
   private final OrderService orderService;
   private final DtoValidator dtoValidator;
   private final PasswordEncoder passwordEncoder;
-  private final ResourceBundleMessageSource messageSource;
 
   @Autowired
   public UserService(
@@ -46,15 +43,13 @@ public class UserService implements UserDetailsService {
       UserMapper userMapper,
       OrderService orderService,
       DtoValidator dtoValidator,
-      PasswordEncoder passwordEncoder,
-      ResourceBundleMessageSource messageSource) {
+      PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.userMapper = userMapper;
     this.orderService = orderService;
     this.dtoValidator = dtoValidator;
     this.passwordEncoder = passwordEncoder;
-    this.messageSource = messageSource;
   }
 
   /**
@@ -91,6 +86,7 @@ public class UserService implements UserDetailsService {
    */
   public UserDto find(String login) {
     User user = userRepository.find(login);
+    user.setPassword("");
     return userMapper.convertToDto(user);
   }
 
@@ -101,6 +97,7 @@ public class UserService implements UserDetailsService {
    */
   public List<UserDto> findAll() {
     List<User> users = userRepository.findAll();
+    users.forEach(user -> user.setPassword(""));
     return userMapper.convertToDto(users);
   }
 
@@ -111,14 +108,17 @@ public class UserService implements UserDetailsService {
    */
   public Long findUserWithHighestOrdersCost() {
     List<User> users = userRepository.findAll();
+    users.forEach(user -> user.setPassword(""));
     Map<Long, BigDecimal> totalCosts = new HashMap<>();
-    users.forEach(user -> totalCosts.put(user.getId(), orderService.countUserAllOrdersCost(user.getId())));
+    users.forEach(
+        user -> totalCosts.put(user.getId(), orderService.countUserAllOrdersCost(user.getId())));
     Map.Entry<Long, BigDecimal> maxEntry = null;
     for (Map.Entry<Long, BigDecimal> entry : totalCosts.entrySet()) {
       if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
         maxEntry = entry;
       }
     }
-    return maxEntry.getKey();
+    if (Objects.nonNull(maxEntry.getKey())) return maxEntry.getKey();
+    else return null;
   }
 }

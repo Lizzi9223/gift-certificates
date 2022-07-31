@@ -1,11 +1,11 @@
 package com.epam.esm.repos;
 
-import com.epam.esm.consts.MessagesKeys;
+import com.epam.esm.consts.MessagesKeysRepos;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repos.metadata.TableField;
 import com.epam.esm.repos.query.TagSQL;
-import exception.RepositoryException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -113,7 +113,7 @@ public class TagRepository {
    */
   public List<Tag> findExistingTags(Set<Tag> tags) {
     return entityManager
-        .createNativeQuery(TagSQL.GET_QUERY_TO_FIND_EXISTING_TAGS(tags), Tag.class)
+        .createNativeQuery(TagSQL.getQueryToFindExistingTags(tags), Tag.class)
         .getResultList();
   }
 
@@ -122,7 +122,7 @@ public class TagRepository {
     logger.error("Attempt to create tag with name '" + name + "' got error: " + e.getCause());
     throw new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.TAG_CREATION_FAILED,
+            MessagesKeysRepos.TAG_CREATION_FAILED,
             new Object[] {name},
             LocaleContextHolder.getLocale()));
   }
@@ -131,7 +131,7 @@ public class TagRepository {
     logger.error("Tag {id=" + id + "} does not exist");
     throw new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.TAG_ID_NOT_EXIST,
+            MessagesKeysRepos.TAG_ID_NOT_EXIST,
             new Object[] {id.toString()},
             LocaleContextHolder.getLocale()));
   }
@@ -140,7 +140,7 @@ public class TagRepository {
     logger.error("Tag {name='" + name + "'} does not exist");
     throw new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.TAG_NAME_NOT_EXIST, new Object[] {name}, LocaleContextHolder.getLocale()),
+            MessagesKeysRepos.TAG_NAME_NOT_EXIST, new Object[] {name}, LocaleContextHolder.getLocale()),
         e);
   }
 }

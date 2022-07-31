@@ -16,7 +16,7 @@ public final class CertificateSQL {
    * @param searchCriteria contains search params
    * @return string select query
    */
-  public static String GET_FIND_QUERY(SearchCriteria searchCriteria) {
+  public static String getFindQuery(SearchCriteria searchCriteria) {
     StringBuilder findQuery = new StringBuilder();
     findQuery.append(
         "select distinct gift_certificate.id, gift_certificate.name, description, price, duration, create_date, last_update_date, "

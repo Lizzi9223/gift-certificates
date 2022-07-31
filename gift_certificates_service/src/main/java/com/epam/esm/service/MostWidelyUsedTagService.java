@@ -32,13 +32,16 @@ public class MostWidelyUsedTagService {
     Map<Long, Integer> tagsCount = new HashMap<>();
     orderDtos.forEach(
         orderDto -> {
-          orderDto.getCertificates()
+          orderDto
+              .getCertificates()
               .forEach(
                   certificate -> {
-                    certificate.getTags()
+                    certificate
+                        .getTags()
                         .forEach(
                             tag -> {
-                              tagsCount.put(tag.getId(), tagsCount.getOrDefault(tag.getId(), 0) + 1);
+                              tagsCount.put(
+                                  tag.getId(), tagsCount.getOrDefault(tag.getId(), 0) + 1);
                             });
                   });
         });

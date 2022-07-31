@@ -6,7 +6,6 @@ package com.epam.esm.consts;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
-public interface MessageKeysService {
-  String EMPTY_ORDER = "message.service.orderIsEmpty";
-  String AUTH_FAILED = "message.service.authFailed";
+public final class MessageKeysService {
+  public static final String EMPTY_ORDER = "message.service.orderIsEmpty";
 }

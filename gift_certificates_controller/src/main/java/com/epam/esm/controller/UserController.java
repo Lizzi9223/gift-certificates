@@ -2,10 +2,9 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.service.UserService;
-import com.epam.esm.utils.pagination.Pagination;
 import com.epam.esm.utils.hateoas.UserHateoas;
+import com.epam.esm.utils.pagination.Pagination;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +56,8 @@ public class UserController {
   public ResponseEntity<List<UserDto>> findAll(
       @RequestParam(required = true, name = "page") int page,
       @RequestParam(required = true, name = "pageSize") int pageSize) {
-    List<UserDto> userDtos = (List<UserDto>) pagination.paginate(userService.findAll(), page, pageSize);
+    List<UserDto> userDtos =
+        (List<UserDto>) pagination.paginate(userService.findAll(), page, pageSize);
     userDtos.forEach(userHateoas::getLinks);
     return new ResponseEntity<>(userDtos, HttpStatus.OK);
   }

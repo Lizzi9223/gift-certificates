@@ -1,10 +1,10 @@
 package com.epam.esm.repos;
 
-import com.epam.esm.consts.MessagesKeys;
+import com.epam.esm.consts.MessagesKeysRepos;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.User;
+import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repos.metadata.TableField;
-import exception.RepositoryException;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.EntityManager;
@@ -41,6 +41,7 @@ public class UserRepository {
       entityManager.getTransaction().begin();
       entityManager.persist(user);
       entityManager.getTransaction().commit();
+      entityManager.detach(user);
     } catch (PersistenceException e) {
       entityManager.getTransaction().rollback();
       throw getExceptionForUserLoginAlreadyExists(e, user.getLogin());
@@ -95,7 +96,7 @@ public class UserRepository {
     logger.error("User {login='" + login + "'} does not exist");
     throw new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.USER_LOGIN_NOT_EXIST,
+            MessagesKeysRepos.USER_LOGIN_NOT_EXIST,
             new Object[] {login},
             LocaleContextHolder.getLocale()),
         e);
@@ -106,7 +107,7 @@ public class UserRepository {
     logger.error("Attempt to create user with login '" + login + "' got error: " + e.getCause());
     throw new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.USER_CREATION_FAILED,
+            MessagesKeysRepos.USER_CREATION_FAILED,
             new Object[] {login},
             LocaleContextHolder.getLocale()),
         e);
@@ -116,7 +117,7 @@ public class UserRepository {
     logger.error("User {id ='" + id + "'} does not exist");
     throw new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.USER_ID_NOT_EXIST,
+            MessagesKeysRepos.USER_ID_NOT_EXIST,
             new Object[] {id.toString()},
             LocaleContextHolder.getLocale()),
         e);

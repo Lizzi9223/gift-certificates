@@ -16,7 +16,7 @@ public final class TagSQL {
    * @param tags contains tags to find
    * @return string select query
    */
-  public static String GET_QUERY_TO_FIND_EXISTING_TAGS(Set<Tag> tags) {
+  public static String getQueryToFindExistingTags(Set<Tag> tags) {
     StringBuilder findQuery = new StringBuilder();
     findQuery.append("select * from tag where tag.name regexp '");
     for (Tag tag : tags) {

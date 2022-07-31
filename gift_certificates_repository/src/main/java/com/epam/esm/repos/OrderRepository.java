@@ -1,10 +1,10 @@
 package com.epam.esm.repos;
 
-import com.epam.esm.consts.MessagesKeys;
+import com.epam.esm.consts.MessagesKeysRepos;
 import com.epam.esm.consts.NamedQueriesKeys;
 import com.epam.esm.entity.Order;
+import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repos.metadata.TableField;
-import exception.RepositoryException;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.EntityManager;
@@ -72,7 +72,7 @@ public class OrderRepository {
     logger.error("Order {id ='" + id + "'} does not exist");
     return new RepositoryException(
         messageSource.getMessage(
-            MessagesKeys.ORDER_ID_NOT_EXIST,
+            MessagesKeysRepos.ORDER_ID_NOT_EXIST,
             new Object[] {id.toString()},
             LocaleContextHolder.getLocale()),
         e);

@@ -5,7 +5,6 @@ import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Order;
-import com.epam.esm.entity.User;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.mappers.CertificateMapper;
 import com.epam.esm.mappers.OrderMapper;

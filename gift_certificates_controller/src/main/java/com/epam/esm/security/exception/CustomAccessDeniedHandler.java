@@ -1,9 +1,6 @@
 package com.epam.esm.security.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Collections;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
@@ -20,7 +17,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
   @Override
   public void handle(
       HttpServletRequest request, HttpServletResponse response, AccessDeniedException exc)
-      throws IOException, ServletException {
+      throws IOException {
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     String message;
@@ -37,7 +34,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     } else {
       message = exc.getMessage();
     }
-    byte[] body = new ObjectMapper().writeValueAsBytes(Collections.singletonMap("error", message));
-    response.getOutputStream().write(body);
+    SecurityExceptionHandler.handle(message, response);
   }
 }

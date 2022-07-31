@@ -1,8 +1,6 @@
 package com.epam.esm.security.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,13 +23,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     Exception exception = (Exception) request.getAttribute("exception");
 
-    if (Objects.nonNull(exception)) writeResponse("cause", exception.getMessage(), response);
-    else writeResponse("error", authException.getMessage(), response);
-  }
-
-  private void writeResponse(String key, String message, HttpServletResponse response)
-      throws IOException {
-    byte[] body = new ObjectMapper().writeValueAsBytes(Collections.singletonMap(key, message));
-    response.getOutputStream().write(body);
+    if (Objects.nonNull(exception))
+      SecurityExceptionHandler.handle(exception.getMessage(), response);
+    else SecurityExceptionHandler.handle(authException.getMessage(), response);
   }
 }

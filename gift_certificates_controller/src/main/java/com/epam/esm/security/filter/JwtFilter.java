@@ -9,6 +9,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +36,9 @@ public class JwtFilter extends OncePerRequestFilter {
     try {
       if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
 
-        if (requestURL.contains("refresh")) throw new JwtException("Token is not expired yet");
+        if (requestURL.contains("refresh")) {
+          throw new JwtException("Token is not expired yet");
+        }
 
         UserDetails userDetails =
             new UserDetailsImpl(
@@ -81,6 +84,6 @@ public class JwtFilter extends OncePerRequestFilter {
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
       return bearerToken.replace("Bearer ", "");
     }
-    return null;
+    return Strings.EMPTY;
   }
 }

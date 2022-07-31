@@ -1,16 +1,7 @@
 package com.epam.esm.exception;
 
-import static com.epam.esm.consts.CommonConstants.ExceptionCode.AUTH_CODE;
-import static com.epam.esm.consts.CommonConstants.ExceptionCode.CERTIFICATE_CODE;
-import static com.epam.esm.consts.CommonConstants.ExceptionCode.ORDER_CODE;
-import static com.epam.esm.consts.CommonConstants.ExceptionCode.TAG_CODE;
-import static com.epam.esm.consts.CommonConstants.ExceptionCode.USER_CODE;
-import static com.epam.esm.consts.CommonConstants.URL.CERTIFICATE;
-import static com.epam.esm.consts.CommonConstants.URL.ORDER;
-import static com.epam.esm.consts.CommonConstants.URL.TAG;
-import static org.hibernate.cfg.AvailableSettings.USER;
-
-import exception.RepositoryException;
+import com.epam.esm.consts.ExceptionCode;
+import com.epam.esm.consts.URL;
 import javax.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -44,7 +35,7 @@ public class ControllerExceptionHandler {
   }
 
   /**
-   * Handles ResourceNotFoundException
+   * Handles NotFound
    *
    * @param e thrown exception
    * @param request received request
@@ -104,18 +95,27 @@ public class ControllerExceptionHandler {
     e.printStackTrace();
     exceptionResponse.setErrorMessage(e.getMessage());
     String errorCode = String.valueOf(httpStatus.value());
-    if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(TAG))
-      errorCode += TAG_CODE;
-    else if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(ORDER))
-      errorCode += USER_CODE;
-    else if (((ServletWebRequest) request).getRequest().getRequestURL().toString().contains(USER))
-      errorCode += ORDER_CODE;
+    if (((ServletWebRequest) request)
+        .getRequest()
+        .getRequestURL()
+        .toString()
+        .contains(URL.TAG)) errorCode += ExceptionCode.TAG_CODE;
     else if (((ServletWebRequest) request)
         .getRequest()
         .getRequestURL()
         .toString()
-        .contains(CERTIFICATE)) errorCode += CERTIFICATE_CODE;
-    else errorCode += AUTH_CODE;
+        .contains(URL.ORDER)) errorCode += ExceptionCode.USER_CODE;
+    else if (((ServletWebRequest) request)
+        .getRequest()
+        .getRequestURL()
+        .toString()
+        .contains(URL.USER)) errorCode += ExceptionCode.ORDER_CODE;
+    else if (((ServletWebRequest) request)
+        .getRequest()
+        .getRequestURL()
+        .toString()
+        .contains(URL.CERTIFICATE)) errorCode += ExceptionCode.CERTIFICATE_CODE;
+    else errorCode += ExceptionCode.AUTH_CODE;
     exceptionResponse.setErrorCode(errorCode);
     return exceptionResponse;
   }

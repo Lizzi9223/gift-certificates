@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public AccessDeniedHandler accessDeniedHandler(){
+  public AccessDeniedHandler accessDeniedHandler() {
     return new CustomAccessDeniedHandler();
   }
 
@@ -60,27 +60,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.authorizeRequests()
         .antMatchers("/register", "/auth")
         .permitAll()
-
         .antMatchers(HttpMethod.GET, "/certificate/*", "/tag/*")
         .permitAll()
-
         .antMatchers("/refresh")
         .authenticated()
-
         .antMatchers(HttpMethod.GET, "/**")
         .hasRole("USER")
-
         .antMatchers(HttpMethod.POST, "/order/**")
         .hasRole("USER")
-
         .antMatchers("/**")
         .hasRole("ADMIN")
-
         .anyRequest()
         .authenticated()
         .and();
 
-    http.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).accessDeniedHandler(accessDeniedHandler()).and();
+    http.exceptionHandling()
+        .authenticationEntryPoint(unauthorizedHandler)
+        .accessDeniedHandler(accessDeniedHandler())
+        .and();
 
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
