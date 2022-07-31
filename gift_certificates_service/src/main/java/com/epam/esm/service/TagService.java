@@ -7,8 +7,6 @@ import com.epam.esm.repos.TagRepository;
 import com.epam.esm.validator.DtoValidator;
 import com.epam.esm.validator.group.CreateInfo;
 import java.util.List;
-import java.util.Optional;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +18,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TagService {
-  private static final Logger logger = Logger.getLogger(TagService.class);
   private final TagRepository tagRepository;
   private final TagMapper tagMapper;
   private final DtoValidator dtoValidator;
 
   @Autowired
-  public TagService(
-      TagRepository tagRepository,
-      TagMapper tagMapper,
-      DtoValidator dtoValidator) {
+  public TagService(TagRepository tagRepository, TagMapper tagMapper, DtoValidator dtoValidator) {
     this.tagRepository = tagRepository;
     this.tagMapper = tagMapper;
     this.dtoValidator = dtoValidator;
@@ -41,22 +35,10 @@ public class TagService {
    * @param tagDto tag to create
    * @return id of the created tag
    */
-  public int create(TagDto tagDto) { // throws ResourceAlreadyExistExcepton
+  public void create(TagDto tagDto) {
     dtoValidator.validate(tagDto, CreateInfo.class);
     Tag tag = tagMapper.convertToEntity(tagDto);
-    return tagRepository.create(tag);
-  }
-
-  /**
-   * Creates new tags
-   *
-   * @param tagDtoList list of tags to create
-   * @return ids of the created tags
-   */
-  public int[] create(List<TagDto> tagDtoList) {
-    tagDtoList.forEach(tagDto -> dtoValidator.validate(tagDto, CreateInfo.class));
-    List<Tag> tags = tagMapper.convertToEntity(tagDtoList);
-    return tagRepository.create(tags);
+    tagRepository.create(tag);
   }
 
   /**
@@ -65,9 +47,9 @@ public class TagService {
    * @param name name of the tag to find
    * @return founded tagDto
    */
-  public TagDto find(String name) {
-    Optional<Tag> tag = tagRepository.find(name);
-    return tagMapper.convertToDto(tag.get());
+  public TagDto findByName(String name) {
+    Tag tag = tagRepository.findByName(name);
+    return tagMapper.convertToDto(tag);
   }
 
   /**
@@ -76,9 +58,9 @@ public class TagService {
    * @param id id of the tag to find
    * @return founded tagDto
    */
-  public TagDto findById(int id) {
-    Optional<Tag> tag = tagRepository.findById(id);
-    return tagMapper.convertToDto(tag.get());
+  public TagDto findById(Long id) {
+    Tag tag = tagRepository.findById(id);
+    return tagMapper.convertToDto(tag);
   }
 
   /**
@@ -97,7 +79,7 @@ public class TagService {
    *
    * @param id id of the tag to delete
    */
-  public void delete(int id) {
+  public void delete(Long id) {
     tagRepository.delete(id);
   }
 }

@@ -14,7 +14,7 @@ import javax.persistence.MappedSuperclass;
  */
 @EntityListeners(AuditListener.class)
 @MappedSuperclass
-public class BaseEntity {
+public abstract class BaseEntity {
   @Column(name = "operation")
   private String operation;
 

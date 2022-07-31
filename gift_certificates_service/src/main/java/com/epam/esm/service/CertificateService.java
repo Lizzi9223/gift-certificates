@@ -4,17 +4,16 @@ import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.mappers.CertificateMapper;
-import com.epam.esm.mappers.TagMapper;
 import com.epam.esm.repos.CertificateRepository;
-import com.epam.esm.repos.CertificateTagsRepository;
+import com.epam.esm.repos.TagRepository;
 import com.epam.esm.search.model.SearchCriteria;
 import com.epam.esm.validator.DtoValidator;
 import com.epam.esm.validator.group.CreateInfo;
 import com.epam.esm.validator.group.UpdateInfo;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import org.apache.log4j.Logger;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,28 +25,20 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CertificateService {
-  private static final Logger logger = Logger.getLogger(CertificateService.class);
   private final CertificateRepository certificateRepository;
-  private final TagService tagService;
-
-  private final CertificateTagsRepository certificateTagsRepository;
+  private final TagRepository tagRepository;
   private final CertificateMapper certificateMapper;
-  private final TagMapper tagMapper;
   private final DtoValidator dtoValidator;
 
   @Autowired
   public CertificateService(
       CertificateRepository certificateRepository,
-      CertificateTagsRepository certificateTagsRepository,
-      TagService tagService,
+      TagRepository tagRepository,
       CertificateMapper certificateMapper,
-      TagMapper tagMapper,
       DtoValidator dtoValidator) {
     this.certificateRepository = certificateRepository;
-    this.certificateTagsRepository = certificateTagsRepository;
-    this.tagService = tagService;
+    this.tagRepository = tagRepository;
     this.certificateMapper = certificateMapper;
-    this.tagMapper = tagMapper;
     this.dtoValidator = dtoValidator;
   }
 
@@ -60,12 +51,13 @@ public class CertificateService {
    */
   public void create(CertificateDto certificateDto) {
     dtoValidator.validate(certificateDto, CreateInfo.class);
-    Certificate certificate = certificateMapper.convertToEntity(certificateDto);
-    int certificateId = certificateRepository.create(certificate);
-    if (Objects.nonNull(certificateDto.getTags())) {
-      int[] tagIds = tagService.create(certificateDto.getTags());
-      certificateTagsRepository.create(certificateId, tagIds);
+    if (Objects.isNull(certificateDto.getCreateDate())) {
+      certificateDto.setCreateDate(LocalDateTime.now());
     }
+    if (Objects.isNull(certificateDto.getLastUpdateDate())) {
+      certificateDto.setLastUpdateDate(LocalDateTime.now());
+    }
+    createOrUpdate(certificateDto);
   }
 
   /**
@@ -76,15 +68,36 @@ public class CertificateService {
    * @param certificateDto certificate info for update
    * @param id id of the certificate to update
    */
-  public void update(CertificateDto certificateDto, int id) {
+  public void update(CertificateDto certificateDto, Long id) {
     dtoValidator.validate(certificateDto, UpdateInfo.class);
     certificateDto.setId(id);
+    createOrUpdate(certificateDto);
+  }
+
+  private void createOrUpdate(CertificateDto certificateDto) {
     Certificate certificate = certificateMapper.convertToEntity(certificateDto);
-    certificateRepository.update(certificate);
-    if (Objects.nonNull(certificateDto.getTags())) {
-      int[] tagIds = tagService.create(certificateDto.getTags());
-      certificateTagsRepository.create(id, tagIds);
-    }
+    setIdsToTagsIfExists(certificate.getTags());
+    certificateRepository.createOrUpdate(certificate);
+  }
+
+  /**
+   * If tag from collection exists, id of the tag will be set <br>
+   * to the corresponding object in collection <br>
+   * If this not done, exception 'Duplicate entry' will occur <br>
+   * because Hibernate will try to insert these entities <br>
+   * (but this way Hibernate will update them and that's fine)
+   *
+   * @param tagsToFind set of tags to find
+   */
+  private void setIdsToTagsIfExists(Set<Tag> tagsToFind) {
+    List<Tag> tags = tagRepository.findExistingTags(tagsToFind);
+    tagsToFind.forEach(
+        tagToFind -> {
+          tags.forEach(
+              existingTag -> {
+                if (existingTag.equals(tagToFind)) tagToFind.setId(existingTag.getId());
+              });
+        });
   }
 
   /**
@@ -92,14 +105,14 @@ public class CertificateService {
    *
    * @param id id of the certificate to delete
    */
-  public void delete(int id) {
+  public void delete(Long id) {
     certificateRepository.delete(id);
   }
 
   /**
    * Searches for certificates by params
    *
-   * @param tagName name of the tag certificates to contain
+   * @param tagNames name of the tag certificates to contain
    * @param certificateName part of certificate name
    * @param certificateDescription part of certificate description
    * @param sortByDateType sort by date ASC or DESC
@@ -116,12 +129,7 @@ public class CertificateService {
         new SearchCriteria(
             tagNames, certificateName, certificateDescription, sortByDateType, sortByNameType);
     List<Certificate> certificates = certificateRepository.find(searchCriteria);
-    List<CertificateDto> certificateDtos = certificateMapper.convertToDto(certificates);
-    certificateDtos.forEach(
-        c ->
-            c.setTags(
-                tagMapper.convertToDto(certificateTagsRepository.findCertificateTags(c.getId()))));
-    return certificateDtos;
+    return certificateMapper.convertToDto(certificates);
   }
 
   /**
@@ -131,28 +139,7 @@ public class CertificateService {
    * @return founded certificateDto
    */
   public CertificateDto find(String name) {
-    Optional<Certificate> certificate = certificateRepository.find(name);
-    if (certificate.isPresent()) {
-      CertificateDto certificateDto = certificateMapper.convertToDto(certificate.get());
-      List<Tag> tags = certificateTagsRepository.findCertificateTags(certificateDto.getId());
-      certificateDto.setTags(tagMapper.convertToDto(tags));
-      return certificateDto;
-    } else return null;
-  }
-
-  /**
-   * Searches for certificate by id
-   *
-   * @param name id of the certificate to find
-   * @return founded certificateDto
-   */
-  public CertificateDto findById(int id) {
-    Optional<Certificate> certificate = certificateRepository.findById(id);
-    if (certificate.isPresent()) {
-      CertificateDto certificateDto = certificateMapper.convertToDto(certificate.get());
-      List<Tag> tags = certificateTagsRepository.findCertificateTags(certificateDto.getId());
-      certificateDto.setTags(tagMapper.convertToDto(tags));
-      return certificateDto;
-    } else return null;
+    Certificate certificate = certificateRepository.find(name);
+    return certificateMapper.convertToDto(certificate);
   }
 }

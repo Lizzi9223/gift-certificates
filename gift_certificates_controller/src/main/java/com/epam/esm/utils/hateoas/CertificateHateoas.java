@@ -3,7 +3,7 @@ package com.epam.esm.utils.hateoas;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import com.epam.esm.controller.certificate.CertificateController;
+import com.epam.esm.controller.CertificateController;
 import com.epam.esm.dto.CertificateDto;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,7 @@ public class CertificateHateoas {
         linkTo(methodOn(CertificateController.class).update(certificateDto, certificateDto.getId()))
             .withRel("update"));
     certificateDto.add(
-        linkTo(methodOn(CertificateController.class).delete(certificateDto.getId()))
+        linkTo(methodOn(CertificateController.class).delete((long)certificateDto.getId()))
             .withRel("delete"));
   }
 }

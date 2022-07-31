@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TagMapper {
-  private static final Logger logger = Logger.getLogger(TagMapper.class);
   private final ModelMapper modelMapper;
 
   @Autowired

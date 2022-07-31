@@ -1,16 +1,24 @@
 package com.epam.esm.service;
 
+import com.epam.esm.consts.UserRoles;
 import com.epam.esm.dto.UserDto;
+import com.epam.esm.entity.Role;
 import com.epam.esm.entity.User;
 import com.epam.esm.mappers.UserMapper;
+import com.epam.esm.repos.RoleRepository;
 import com.epam.esm.repos.UserRepository;
+import com.epam.esm.security.UserDetailsImpl;
+import com.epam.esm.validator.DtoValidator;
+import com.epam.esm.validator.group.CreateInfo;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import org.apache.log4j.Logger;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,40 +28,66 @@ import org.springframework.stereotype.Service;
  * @version 1.0
  */
 @Service
-public class UserService {
-  private static final Logger logger = Logger.getLogger(UserService.class);
+public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
   private final UserMapper userMapper;
   private final OrderService orderService;
+  private final DtoValidator dtoValidator;
+  private final PasswordEncoder passwordEncoder;
 
   @Autowired
   public UserService(
-      UserRepository userRepository, UserMapper userMapper, OrderService orderService) {
+      UserRepository userRepository,
+      RoleRepository roleRepository,
+      UserMapper userMapper,
+      OrderService orderService,
+      DtoValidator dtoValidator,
+      PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
     this.userMapper = userMapper;
     this.orderService = orderService;
+    this.dtoValidator = dtoValidator;
+    this.passwordEncoder = passwordEncoder;
   }
 
   /**
-   * Searches for user by name
+   * Implementation of loadUserByUsername method defined in UserDetailsService interface
    *
-   * @param name name of the user to find
-   * @return founded userDto
+   * @param login login of the user to find
+   * @return founded user
    */
-  public UserDto find(String name) {
-    Optional<User> user = userRepository.find(name);
-    return user.map(userMapper::convertToDto).orElse(null);
+  @Override
+  public UserDetails loadUserByUsername(String login) {
+    User user = userRepository.find(login);
+    return UserDetailsImpl.fromUserEntityToUserDetails(user);
   }
 
   /**
-   * Searches for user by id
+   * Creates new user with role user only
    *
-   * @param id id of the user to find
+   * @param userDto user to create
+   */
+  public void saveUser(UserDto userDto) {
+    Role role = roleRepository.findByName(UserRoles.USER.toString());
+    userDto.setRoleId(role.getId());
+    dtoValidator.validate(userDto, CreateInfo.class);
+    userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+    User user = userMapper.convertToEntity(userDto);
+    userRepository.create(user);
+  }
+
+  /**
+   * Searches for user by login
+   *
+   * @param login login of the user to find
    * @return founded userDto
    */
-  public UserDto find(int id) {
-    Optional<User> user = userRepository.find(id);
-    return user.map(userMapper::convertToDto).orElse(null);
+  public UserDto find(String login) {
+    User user = userRepository.find(login);
+    user.setPassword("");
+    return userMapper.convertToDto(user);
   }
 
   /**
@@ -63,6 +97,7 @@ public class UserService {
    */
   public List<UserDto> findAll() {
     List<User> users = userRepository.findAll();
+    users.forEach(user -> user.setPassword(""));
     return userMapper.convertToDto(users);
   }
 
@@ -71,16 +106,19 @@ public class UserService {
    *
    * @return founded userDto
    */
-  public int findUserWithHighestOrdersCost() {
+  public Long findUserWithHighestOrdersCost() {
     List<User> users = userRepository.findAll();
-    Map<Integer, BigDecimal> totalCosts = new HashMap<>();
-    users.forEach(u -> totalCosts.put(u.getId(), orderService.countUserAllOrdersCost(u.getId())));
-    Map.Entry<Integer, BigDecimal> maxEntry = null;
-    for (Map.Entry<Integer, BigDecimal> entry : totalCosts.entrySet()) {
+    users.forEach(user -> user.setPassword(""));
+    Map<Long, BigDecimal> totalCosts = new HashMap<>();
+    users.forEach(
+        user -> totalCosts.put(user.getId(), orderService.countUserAllOrdersCost(user.getId())));
+    Map.Entry<Long, BigDecimal> maxEntry = null;
+    for (Map.Entry<Long, BigDecimal> entry : totalCosts.entrySet()) {
       if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
         maxEntry = entry;
       }
     }
-    return maxEntry.getKey();
+    if (Objects.nonNull(maxEntry.getKey())) return maxEntry.getKey();
+    else return null;
   }
 }

@@ -4,7 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.epam.esm.controller.order.OrderController;
-import com.epam.esm.controller.user.UserController;
+import com.epam.esm.controller.UserController;
 import com.epam.esm.dto.UserDto;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class UserHateoas {
    * @param userDto object links added to
    */
   public void getLinks(UserDto userDto) {
-    userDto.add(linkTo(methodOn(UserController.class).findByName(userDto.getName())).withSelfRel());
+    userDto.add(linkTo(methodOn(UserController.class).findByLogin(userDto.getLogin())).withSelfRel());
     userDto.add(
         linkTo(methodOn(OrderController.class).findByUserId(userDto.getId(), 1, 100))
             .withRel("orders"));

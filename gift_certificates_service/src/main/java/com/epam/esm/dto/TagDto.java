@@ -12,7 +12,7 @@ import org.springframework.hateoas.RepresentationModel;
  * @version 1.0
  */
 public class TagDto extends RepresentationModel<TagDto> {
-  private int id;
+  private Long id;
 
   @NotBlank(message = "Name should not be blank")
   @Size(min = 2, max = 50, message = "Name length should be between 2 and 50")
@@ -24,16 +24,16 @@ public class TagDto extends RepresentationModel<TagDto> {
     this.name = name;
   }
 
-  public TagDto(int id, String name) {
+  public TagDto(Long id, String name) {
     this.id = id;
     this.name = name;
   }
 
-  public int getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -47,15 +47,22 @@ public class TagDto extends RepresentationModel<TagDto> {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    TagDto tagDTO = (TagDto) o;
-    return id == tagDTO.id && Objects.equals(name, tagDTO.name);
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    TagDto tagDto = (TagDto) o;
+    return Objects.equals(id, tagDto.id) && Objects.equals(name, tagDto.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(super.hashCode(), id, name);
   }
 
   @Override
