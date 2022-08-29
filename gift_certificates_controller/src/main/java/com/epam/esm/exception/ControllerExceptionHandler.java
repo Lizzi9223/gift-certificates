@@ -22,7 +22,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  */
 @RestControllerAdvice
 public class ControllerExceptionHandler {
-
   @ExceptionHandler({
     RepositoryException.class,
     ServiceException.class,

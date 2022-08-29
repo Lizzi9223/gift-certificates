@@ -5,4 +5,5 @@ public final class URL {
   public static final String ORDER = "order";
   public static final String USER = "user";
   public static final String CERTIFICATE = "certificate";
+  public static final String REFRESH = "refresh";
 }

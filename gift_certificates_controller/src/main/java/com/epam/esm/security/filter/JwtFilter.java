@@ -1,5 +1,7 @@
 package com.epam.esm.security.filter;
 
+import com.epam.esm.consts.Attributes;
+import com.epam.esm.consts.URL;
 import com.epam.esm.security.UserDetailsImpl;
 import com.epam.esm.security.jwt.JwtProvider;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -18,6 +20,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * Filter to check JWT token
+ *
+ * @author Lizaveta Yakauleva
+ * @version 1.0
+ */
 @Component
 public class JwtFilter extends OncePerRequestFilter {
   private final JwtProvider jwtProvider;
@@ -36,13 +44,15 @@ public class JwtFilter extends OncePerRequestFilter {
     try {
       if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
 
-        if (requestURL.contains("refresh")) {
+        if (requestURL.contains(URL.REFRESH)) {
           throw new JwtException("Token is not expired yet");
         }
 
         UserDetails userDetails =
             new UserDetailsImpl(
-                jwtProvider.getLoginFromToken(token), "", jwtProvider.getRolesFromToken(token));
+                jwtProvider.getLoginFromToken(token),
+                Strings.EMPTY,
+                jwtProvider.getRolesFromToken(token));
 
         UsernamePasswordAuthenticationToken auth =
             new UsernamePasswordAuthenticationToken(
@@ -52,21 +62,21 @@ public class JwtFilter extends OncePerRequestFilter {
       }
     } catch (ExpiredJwtException e) {
 
-      if (requestURL.contains("refresh")) {
+      if (requestURL.contains(URL.REFRESH)) {
 
         if (jwtProvider.isRefreshAvailable(e)) {
           allowForRefreshToken(e, request);
         } else {
           request.setAttribute(
-              "exception", new JwtException("Token is not available for refresh yet"));
+              Attributes.EXCEPTION, new JwtException("Token is not available for refresh yet"));
         }
 
       } else {
-        request.setAttribute("exception", e);
+        request.setAttribute(Attributes.EXCEPTION, e);
       }
 
     } catch (JwtException e) {
-      request.setAttribute("exception", e);
+      request.setAttribute(Attributes.EXCEPTION, e);
     }
 
     filterChain.doFilter(request, response);
@@ -76,13 +86,14 @@ public class JwtFilter extends OncePerRequestFilter {
     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
         new UsernamePasswordAuthenticationToken(null, null, null);
     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-    request.setAttribute("claims", ex.getClaims());
+    request.setAttribute(Attributes.CLAIMS, ex.getClaims());
   }
 
   private String getTokenFromRequest(HttpServletRequest request) {
-    String bearerToken = request.getHeader("Authorization");
-    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-      return bearerToken.replace("Bearer ", "");
+    String bearerToken = request.getHeader(Attributes.AUTHORIZATION);
+    if (StringUtils.hasText(bearerToken)
+        && bearerToken.startsWith(Attributes.TOKEN_BEGINNING_IN_HEADER)) {
+      return bearerToken.replace(Attributes.TOKEN_BEGINNING_IN_HEADER, Strings.EMPTY);
     }
     return Strings.EMPTY;
   }
