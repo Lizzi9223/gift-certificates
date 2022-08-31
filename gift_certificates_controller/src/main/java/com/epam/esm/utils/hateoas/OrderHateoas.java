@@ -5,6 +5,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.epam.esm.controller.order.OrderController;
 import com.epam.esm.dto.OrderDto;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,11 +21,12 @@ public class OrderHateoas {
    * adds links to object
    *
    * @param orderDto object links added to
+   * @param pageable for pagination implementation
    */
-  public void getLinks(OrderDto orderDto) {
+  public void getLinks(OrderDto orderDto, Pageable pageable) {
     orderDto.add(linkTo(methodOn(OrderController.class).findById(orderDto.getId())).withSelfRel());
     orderDto.add(
-        linkTo(methodOn(OrderController.class).findByUserId(orderDto.getUserId(), 1, 100))
+        linkTo(methodOn(OrderController.class).findByUserId(orderDto.getUserId(), PageRequest.of(1, 1000)))
             .withRel("allUserOrders"));
   }
 }

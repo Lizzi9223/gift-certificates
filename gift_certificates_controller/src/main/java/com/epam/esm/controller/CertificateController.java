@@ -3,9 +3,10 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.utils.hateoas.CertificateHateoas;
-import com.epam.esm.utils.pagination.Pagination;
+import java.security.InvalidParameterException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,16 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/certificate")
 public class CertificateController {
   private final CertificateService certificateService;
-  private final Pagination pagination;
   private final CertificateHateoas certificateHateoas;
 
   @Autowired
   public CertificateController(
-      CertificateService certificateService,
-      Pagination pagination,
-      CertificateHateoas certificateHateoas) {
+      CertificateService certificateService, CertificateHateoas certificateHateoas) {
     this.certificateService = certificateService;
-    this.pagination = pagination;
     this.certificateHateoas = certificateHateoas;
   }
 
@@ -87,6 +84,7 @@ public class CertificateController {
    * @param description part of the certificate description
    * @param sortByDateType sort by date ASC or DESC
    * @param sortByNameType sort by name ASC or DESC
+   * @param pageable for pagination implementation
    * @return ResponseEntity containing http status and list of the certificates that correspond to
    *     the provided params
    */
@@ -97,15 +95,14 @@ public class CertificateController {
       @RequestParam(required = false, name = "description") String description,
       @RequestParam(required = false, name = "sortByDateType") String sortByDateType,
       @RequestParam(required = false, name = "sortByNameType") String sortByNameType,
-      @RequestParam(required = true, name = "page") int page,
-      @RequestParam(required = true, name = "pageSize") int pageSize) {
+      Pageable pageable) {
+    if (pageable.getPageSize() < 0 || pageable.getPageNumber() < 0)
+      throw new InvalidParameterException(
+          "Number of page or page size in pageable must be integer numbers and cannot be less than 1");
+
     List<CertificateDto> certificateDtos =
-        (List<CertificateDto>)
-            pagination.paginate(
-                certificateService.find(
-                    tagNames, name, description, sortByDateType, sortByNameType),
-                page,
-                pageSize);
+        certificateService.find(
+            tagNames, name, description, sortByDateType, sortByNameType, pageable);
     certificateDtos.forEach(certificateHateoas::getLinks);
     return new ResponseEntity<>(certificateDtos, HttpStatus.OK);
   }

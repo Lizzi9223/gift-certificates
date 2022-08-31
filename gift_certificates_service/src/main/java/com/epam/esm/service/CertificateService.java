@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -160,6 +161,7 @@ public class CertificateService {
    * @param certificateDescription part of certificate description
    * @param sortByDateType sort by date ASC or DESC
    * @param sortByNameType sort by name ASC or DESC
+   * @param pageable for pagination implementation
    * @return list of founded certificateDtos
    */
   public List<CertificateDto> find(
@@ -167,12 +169,13 @@ public class CertificateService {
       String certificateName,
       String certificateDescription,
       String sortByDateType,
-      String sortByNameType) {
+      String sortByNameType,
+      Pageable pageable) {
     SearchCriteria criteria =
         new SearchCriteria(
             tagNames, certificateName, certificateDescription, sortByDateType, sortByNameType);
     if (SearchCriteriaValidator.isValid(criteria)) {
-      List<Certificate> certificates = certificateRepository.findByCriteria(criteria);
+      List<Certificate> certificates = certificateRepository.findByCriteria(criteria, pageable);
       return certificateMapper.convertToDto(certificates);
     } else throw exceptionHandling.getInvalidSearchParamsException();
   }

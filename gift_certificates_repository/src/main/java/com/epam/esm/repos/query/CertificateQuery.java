@@ -4,6 +4,7 @@ import com.epam.esm.entity.Certificate;
 import com.epam.esm.search.model.SearchCriteria;
 import java.util.Objects;
 import java.util.Set;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Contains SQL queries for operations with gift_certificate table
@@ -16,9 +17,10 @@ public final class CertificateQuery {
    * Returns select query for certificates
    *
    * @param searchCriteria contains search params
+   * @param pageable for pagination implementation
    * @return string select query
    */
-  public static String getFindQuery(SearchCriteria searchCriteria) {
+  public static String getFindQuery(SearchCriteria searchCriteria, Pageable pageable) {
     StringBuilder findQuery = new StringBuilder();
     findQuery.append(
         "select distinct gift_certificate.id, gift_certificate.name, description, price, duration, create_date, last_update_date, "
@@ -67,6 +69,11 @@ public final class CertificateQuery {
       else findQuery.append(" order by");
       findQuery.append(" gift_certificate.name ").append(searchCriteria.getSortByNameType());
     }
+    findQuery
+        .append(" limit ")
+        .append(pageable.getPageSize())
+        .append(" offset ")
+        .append(pageable.getPageSize() * pageable.getPageNumber());
     return findQuery.toString();
   }
 

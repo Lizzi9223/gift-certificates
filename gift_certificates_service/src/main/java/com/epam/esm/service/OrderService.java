@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.Optional;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -120,6 +122,19 @@ public class OrderService {
     Optional<Order> order = orderRepository.findById(id);
     if (order.isPresent()) return orderMapper.convertToDto(order.get());
     else throw exceptionHandling.getOrderIdNotExistException(id);
+  }
+
+  /**
+   * Searches for order by user id
+   *
+   * @param userId id of the user whose orders to find
+   * @param pageable for pagination implementation
+   * @return founded orderDto list
+   */
+  public List<OrderDto> findByUserId(Long userId, Pageable pageable) {
+    User user = (User) userService.findById(userId, false);
+    Page<Order> orders = orderRepository.findByUser(user, pageable);
+    return orderMapper.convertToDto(orders.getContent());
   }
 
   /**

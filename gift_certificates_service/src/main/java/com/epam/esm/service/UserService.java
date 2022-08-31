@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -115,6 +117,18 @@ public class UserService implements UserDetailsService {
       if (isDTO) return userMapper.convertToDto(user.get());
       else return user.get();
     } else throw exceptionHandling.getExceptionForUserIdNotExist(id);
+  }
+
+  /**
+   * Searches for all existing users
+   *
+   * @param pageable for pagination implementation
+   * @return list of all existing users
+   */
+  public List<UserDto> findAll(Pageable pageable) {
+    Page<User> users = userRepository.findAll(pageable);
+    users.forEach(user -> user.setPassword(""));
+    return userMapper.convertToDto(users.getContent());
   }
 
   /**

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -88,11 +90,12 @@ public class TagService {
   /**
    * Searches for all existing tags
    *
+   * @param pageable for pagination implementation
    * @return list of all existing tags
    */
-  public List<TagDto> findAll() {
-    List<Tag> tags = tagRepository.findAll();
-    return tagMapper.convertToDto(tags);
+  public List<TagDto> findAll(Pageable pageable) {
+    Page<Tag> tags = tagRepository.findAll(pageable);
+    return tagMapper.convertToDto(tags.getContent());
   }
 
   /**
