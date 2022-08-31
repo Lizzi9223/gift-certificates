@@ -9,7 +9,7 @@ import java.util.Set;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
-public final class TagSQL {
+public final class TagQuery {
   /**
    * Returns select query that looks for tags by provided names
    *

@@ -1,7 +1,9 @@
 package com.epam.esm.repos.query;
 
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.search.model.SearchCriteria;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Contains SQL queries for operations with gift_certificate table
@@ -9,7 +11,7 @@ import java.util.Objects;
  * @author Lizaveta Yakauleva
  * @version 1.0
  */
-public final class CertificateSQL {
+public final class CertificateQuery {
   /**
    * Returns select query for certificates
    *
@@ -65,6 +67,23 @@ public final class CertificateSQL {
       else findQuery.append(" order by");
       findQuery.append(" gift_certificate.name ").append(searchCriteria.getSortByNameType());
     }
+    return findQuery.toString();
+  }
+
+  /**
+   * Returns select query that looks for certificates by provided names
+   *
+   * @param certificates contains certificates to find
+   * @return string select query
+   */
+  public static String getQueryToFindExistingCertificates(Set<Certificate> certificates) {
+    StringBuilder findQuery = new StringBuilder();
+    findQuery.append("select * from gift_certificate where gift_certificate.name regexp '");
+    for (Certificate certificate : certificates) {
+      findQuery.append(certificate.getName()).append("|");
+    }
+    findQuery.deleteCharAt(findQuery.length() - 1);
+    findQuery.append("'");
     return findQuery.toString();
   }
 }

@@ -85,10 +85,10 @@ public class OrderController {
   @PostMapping(value = "/user/{userId}")
   public ResponseEntity<Void> create(
       @RequestBody OrderDto orderDto, @PathVariable("userId") Long userId) {
-    UserDto userDto =
-        userService.find(SecurityContextHolder.getContext().getAuthentication().getName());
-    if (!userDto.getId().equals(userId))
-      throw new AccessDeniedException("Attempt to make an order for another user");
+//    UserDto userDto =
+//        userService.find(SecurityContextHolder.getContext().getAuthentication().getName());
+//    if (!userDto.getId().equals(userId))
+//      throw new AccessDeniedException("Attempt to make an order for another user");
     orderService.create(orderDto, userId);
     return new ResponseEntity<>(HttpStatus.OK);
   }

@@ -1,8 +1,6 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.consts.NamedQueriesKeys;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -11,8 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 /**
@@ -22,15 +18,6 @@ import javax.persistence.OneToMany;
  * @version 1.0
  */
 @Entity(name = "users")
-@NamedQueries({
-  @NamedQuery(
-      name = NamedQueriesKeys.USER_FIND_BY_LOGIN,
-      query = "SELECT u FROM users u WHERE u.login = :login"),
-  @NamedQuery(
-      name = NamedQueriesKeys.USER_FIND_BY_LOGIN_AND_PASSWORD,
-      query = "SELECT u FROM users u WHERE u.login = :login and u.password = :password"),
-  @NamedQuery(name = NamedQueriesKeys.USER_FIND_ALL, query = "SELECT u FROM users u")
-})
 public class User extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -106,49 +93,5 @@ public class User extends BaseEntity {
 
   public void setOrders(Set<Order> orders) {
     this.orders = orders;
-  }
-
-  public void addOrder(Order order) {
-    orders.add(order);
-    order.setUser(this);
-  }
-
-  public void removeOrder(Order order) {
-    orders.remove(order);
-    order.setUser(null);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    User user = (User) o;
-    return Objects.equals(login, user.login);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(login);
-  }
-
-  @Override
-  public String toString() {
-    return "User{"
-        + "id="
-        + id
-        + ", role="
-        + role
-        + ", login='"
-        + login
-        + '\''
-        + ", password='"
-        + password
-        + '\''
-        + ", name='"
-        + name
-        + '\''
-        + ", orders="
-        + orders
-        + '}';
   }
 }

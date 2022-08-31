@@ -1,23 +1,15 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.consts.NamedQueriesKeys;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 @Entity(name = "roles")
-@NamedQueries({
-    @NamedQuery(name = NamedQueriesKeys.ROLE_FIND_BY_NAME,
-        query = "SELECT r FROM roles r WHERE r.name = :name")
-})
 public class Role extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,23 +50,5 @@ public class Role extends BaseEntity {
 
   public void setUsers(Set<User> users) {
     this.users = users;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Role role = (Role) o;
-    return Objects.equals(name, role.name);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name);
-  }
-
-  @Override
-  public String toString() {
-    return "Role{" + "id=" + id + ", name='" + name + '\'' + ", users=" + users + '}';
   }
 }

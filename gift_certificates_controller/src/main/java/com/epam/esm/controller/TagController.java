@@ -74,8 +74,9 @@ public class TagController {
    */
   @GetMapping
   public ResponseEntity<List<TagDto>> findAll(
-      @RequestParam(required = true, name = "page") int page,
-      @RequestParam(required = true, name = "pageSize") int pageSize) {
+      @RequestParam(name = "page") int page,
+      @RequestParam(name = "pageSize") int pageSize
+  ) {
     List<TagDto> tagDtos = (List<TagDto>) pagination.paginate(tagService.findAll(), page, pageSize);
     tagDtos.forEach(tagHateoas::getSelfLink);
     return new ResponseEntity<>(tagDtos, HttpStatus.OK);

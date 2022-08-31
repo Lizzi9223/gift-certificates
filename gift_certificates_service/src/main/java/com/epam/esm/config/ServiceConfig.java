@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 /** Spring configuration for service layer */
 @Configuration
@@ -19,5 +20,14 @@ public class ServiceConfig {
   @Bean
   public Validator getValidator() {
     return Validation.buildDefaultValidatorFactory().getValidator();
+  }
+
+  @Bean
+  public ResourceBundleMessageSource messageSource() {
+    ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
+    resourceBundleMessageSource.setBasename("messages");
+    resourceBundleMessageSource.setDefaultEncoding("UTF-8");
+    resourceBundleMessageSource.setUseCodeAsDefaultMessage(true);
+    return resourceBundleMessageSource;
   }
 }

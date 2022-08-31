@@ -1,6 +1,5 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.consts.NamedQueriesKeys;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -9,8 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 
 /**
  * Tag entity
@@ -19,14 +16,10 @@ import javax.persistence.NamedQuery;
  * @version 1.0
  */
 @Entity(name = "tag")
-@NamedQueries({
-    @NamedQuery(name = NamedQueriesKeys.TAG_FIND_BY_NAME,
-        query = "SELECT t FROM tag t WHERE t.name = :name"),
-    @NamedQuery(name = NamedQueriesKeys.TAG_FIND_ALL,
-        query = "SELECT t FROM tag t")
-})
 public class Tag extends BaseEntity {
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   private String name;
 
@@ -71,8 +64,12 @@ public class Tag extends BaseEntity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Tag tag = (Tag) o;
     return Objects.equals(name, tag.name);
   }
@@ -80,10 +77,5 @@ public class Tag extends BaseEntity {
   @Override
   public int hashCode() {
     return Objects.hash(name);
-  }
-
-  @Override
-  public String toString() {
-    return "Tag{" + "id=" + id + ", name='" + name + '\'' + ", certificates=" + certificates + '}';
   }
 }
