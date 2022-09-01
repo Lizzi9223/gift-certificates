@@ -3,6 +3,7 @@ package com.epam.esm.repos.сustomrepos.impl;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.repos.query.CertificateQuery;
 import com.epam.esm.repos.сustomrepos.CustomizedCertificateRepo;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
@@ -18,10 +19,14 @@ public class CustomizedCertificateRepoImpl implements CustomizedCertificateRepo 
   public Page findByParams(String[] tagNames, String name, Pageable pageable) {
     String query = CertificateQuery.getFindByParamsQuery(tagNames, name, pageable);
     List<Certificate> content =
-        entityManager.createNativeQuery(query, Certificate.class).getResultList();
+        entityManager
+            .createNativeQuery(query, Certificate.class)
+            .setMaxResults(pageable.getPageSize())
+            .setFirstResult(pageable.getPageSize() * pageable.getPageNumber())
+            .getResultList();
     String countQuery = "select count(*) from (" + query + ") c";
-    int totalSize = entityManager.createNativeQuery(countQuery).getFirstResult();
-    return new PageImpl<>(content, pageable, totalSize);
+    BigInteger totalSize = (BigInteger) entityManager.createNativeQuery(countQuery).getSingleResult();
+    return new PageImpl<>(content, pageable, totalSize.longValue());
   }
 
   @Override

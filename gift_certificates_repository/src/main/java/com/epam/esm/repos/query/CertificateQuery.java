@@ -24,7 +24,7 @@ public final class CertificateQuery {
   public static String getFindByParamsQuery(String[] tagNames, String name, Pageable pageable) {
     StringBuilder findQuery = new StringBuilder();
     findQuery.append(
-        "select g.id, g.name, g.description, g.price, g.duration, g.create_date, g.last_update_date, "
+        "select distinct g.id, g.name, g.description, g.price, g.duration, g.create_date, g.last_update_date, "
             + "g.operation, g.timestamp from gift_certificate g \n"
             + "left outer join gift_certificate_has_tag ght on g.id=ght.gift_certificate_id\n"
             + "left outer join tag t on t.id=ght.tag_id");
@@ -63,12 +63,6 @@ public final class CertificateQuery {
       } else findQuery.append(",");
       findQuery.append(" g.").append(order.getProperty()).append(" ").append(order.getDirection());
     }
-
-    findQuery
-        .append(" limit ")
-        .append(pageable.getPageSize())
-        .append(" offset ")
-        .append(pageable.getPageSize() * pageable.getPageNumber());
 
     return findQuery.toString();
   }
