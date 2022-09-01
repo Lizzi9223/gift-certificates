@@ -57,32 +57,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.csrf().disable();
 
-    http.authorizeRequests().antMatchers("/**").permitAll();
+    http.authorizeRequests()
+        .antMatchers("/register", "/auth")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/certificate/*", "/tag/*")
+        .permitAll()
+        .antMatchers("/refresh")
+        .authenticated()
+        .antMatchers(HttpMethod.GET, "/**")
+        .hasRole("USER")
+        .antMatchers(HttpMethod.POST, "/order/**")
+        .hasRole("USER")
+        .antMatchers("/**")
+        .hasRole("ADMIN")
+        .anyRequest()
+        .authenticated()
+        .and();
 
-//    http.authorizeRequests()
-//        .antMatchers("/register", "/auth")
-//        .permitAll()
-//        .antMatchers(HttpMethod.GET, "/certificate/*", "/tag/*")
-//        .permitAll()
-//        .antMatchers("/refresh")
-//        .authenticated()
-//        .antMatchers(HttpMethod.GET, "/**")
-//        .hasRole("USER")
-//        .antMatchers(HttpMethod.POST, "/order/**")
-//        .hasRole("USER")
-//        .antMatchers("/**")
-//        .hasRole("ADMIN")
-//        .anyRequest()
-//        .authenticated()
-//        .and();
-//
-//    http.exceptionHandling()
-//        .authenticationEntryPoint(unauthorizedHandler)
-//        .accessDeniedHandler(accessDeniedHandler())
-//        .and();
-//
-//    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//
-//    http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    http.exceptionHandling()
+        .authenticationEntryPoint(unauthorizedHandler)
+        .accessDeniedHandler(accessDeniedHandler())
+        .and();
+
+    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+    http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
   }
 }

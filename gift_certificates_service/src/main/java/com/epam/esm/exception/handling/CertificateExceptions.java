@@ -81,17 +81,4 @@ public class CertificateExceptions {
             LocaleContextHolder.getLocale()),
         e);
   }
-
-  /**
-   * Returns exception to throw when <br>
-   * search criteria params are invalid
-   *
-   * @return ServiceException
-   */
-  public ServiceException getInvalidSearchParamsException() {
-    logger.error("Search certificates parameters are invalid");
-    return new ServiceException(
-        messageSource.getMessage(
-            MessagesKeysRepos.INVALID_SEARCH_PARAMS, null, LocaleContextHolder.getLocale()));
-  }
 }

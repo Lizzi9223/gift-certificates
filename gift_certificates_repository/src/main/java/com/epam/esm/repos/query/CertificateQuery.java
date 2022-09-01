@@ -1,10 +1,10 @@
 package com.epam.esm.repos.query;
 
 import com.epam.esm.entity.Certificate;
-import com.epam.esm.search.model.SearchCriteria;
 import java.util.Objects;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 /**
  * Contains SQL queries for operations with gift_certificate table
@@ -16,64 +16,60 @@ public final class CertificateQuery {
   /**
    * Returns select query for certificates
    *
-   * @param searchCriteria contains search params
+   * @param tagNames names of the tags that certificates has to be attached to
+   * @param name substring that certificate has to contain in its name or description
    * @param pageable for pagination implementation
    * @return string select query
    */
-  public static String getFindQuery(SearchCriteria searchCriteria, Pageable pageable) {
+  public static String getFindByParamsQuery(String[] tagNames, String name, Pageable pageable) {
     StringBuilder findQuery = new StringBuilder();
     findQuery.append(
-        "select distinct gift_certificate.id, gift_certificate.name, description, price, duration, create_date, last_update_date, "
-            + "gift_certificate.operation, gift_certificate.timestamp from gift_certificate \n"
-            + "left outer join gift_certificate_has_tag on gift_certificate.id=gift_certificate_has_tag.gift_certificate_id\n"
-            + "left outer join tag on tag.id=gift_certificate_has_tag.tag_id");
+        "select g.id, g.name, g.description, g.price, g.duration, g.create_date, g.last_update_date, "
+            + "g.operation, g.timestamp from gift_certificate g \n"
+            + "left outer join gift_certificate_has_tag ght on g.id=ght.gift_certificate_id\n"
+            + "left outer join tag t on t.id=ght.tag_id");
+
     boolean isWhereClauseAdded = false;
     boolean isOrderClauseAdded = false;
-    if (!Objects.isNull(searchCriteria.getTagNames())) {
-      findQuery.append(" where tag.name regexp '");
-      for (String tagName : searchCriteria.getTagNames()) {
+
+    if (!Objects.isNull(tagNames)) {
+      findQuery.append(" where t.name regexp '");
+      for (String tagName : tagNames) {
         findQuery.append(tagName).append("|");
       }
       findQuery.deleteCharAt(findQuery.length() - 1);
-      findQuery
-          .append("' group by gift_certificate.name having count(*) = ")
-          .append(searchCriteria.getTagNames().length);
+      findQuery.append("' group by g.name having count(*) >= ").append(tagNames.length);
       isWhereClauseAdded = true;
     }
-    if (Objects.nonNull(searchCriteria.getName())) {
+
+    if (Objects.nonNull(name)) {
       if (!isWhereClauseAdded) {
         findQuery.append(" where ");
         isWhereClauseAdded = true;
       } else findQuery.append(" and");
-      findQuery
-          .append(" gift_certificate.name like '%")
-          .append(searchCriteria.getName())
-          .append("%'");
+      findQuery.append(" g.name like '%").append(name).append("%'");
     }
-    if (Objects.nonNull(searchCriteria.getDescription())) {
+
+    if (Objects.nonNull(name)) {
       if (!isWhereClauseAdded) findQuery.append(" where ");
       else findQuery.append(" and");
-      findQuery
-          .append(" gift_certificate.description like '%")
-          .append(searchCriteria.getDescription())
-          .append("%'");
+      findQuery.append(" g.description like '%").append(name).append("%'");
     }
-    if (Objects.nonNull(searchCriteria.getSortByDateType())) {
-      findQuery
-          .append(" order by gift_certificate.create_date ")
-          .append(searchCriteria.getSortByDateType());
-      isOrderClauseAdded = true;
+
+    for (Sort.Order order : pageable.getSort()) {
+      if (!isOrderClauseAdded) {
+        findQuery.append(" order by");
+        isOrderClauseAdded = true;
+      } else findQuery.append(",");
+      findQuery.append(" g.").append(order.getProperty()).append(" ").append(order.getDirection());
     }
-    if (Objects.nonNull(searchCriteria.getSortByNameType())) {
-      if (isOrderClauseAdded) findQuery.append(",");
-      else findQuery.append(" order by");
-      findQuery.append(" gift_certificate.name ").append(searchCriteria.getSortByNameType());
-    }
+
     findQuery
         .append(" limit ")
         .append(pageable.getPageSize())
         .append(" offset ")
         .append(pageable.getPageSize() * pageable.getPageNumber());
+
     return findQuery.toString();
   }
 

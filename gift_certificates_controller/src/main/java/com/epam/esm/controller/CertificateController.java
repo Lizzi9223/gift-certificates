@@ -4,8 +4,8 @@ import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.utils.hateoas.CertificateHateoas;
 import java.security.InvalidParameterException;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,30 +79,22 @@ public class CertificateController {
   /**
    * Searches for certificate by provided params
    *
-   * @param tagNames name of the tag that certificate should be connected with
-   * @param name part of the certificate name
-   * @param description part of the certificate description
-   * @param sortByDateType sort by date ASC or DESC
-   * @param sortByNameType sort by name ASC or DESC
+   * @param tagNames names of the tags that certificates has to be attached to
+   * @param name substring that certificate has to contain in its name or description
    * @param pageable for pagination implementation
    * @return ResponseEntity containing http status and list of the certificates that correspond to
    *     the provided params
    */
   @GetMapping
-  public ResponseEntity<List<CertificateDto>> findByName(
+  public ResponseEntity<Page<CertificateDto>> findByName(
       @RequestParam(required = false, name = "tagNames") String[] tagNames,
       @RequestParam(required = false, name = "name") String name,
-      @RequestParam(required = false, name = "description") String description,
-      @RequestParam(required = false, name = "sortByDateType") String sortByDateType,
-      @RequestParam(required = false, name = "sortByNameType") String sortByNameType,
       Pageable pageable) {
     if (pageable.getPageSize() < 0 || pageable.getPageNumber() < 0)
       throw new InvalidParameterException(
           "Number of page or page size in pageable must be integer numbers and cannot be less than 1");
-
-    List<CertificateDto> certificateDtos =
-        certificateService.find(
-            tagNames, name, description, sortByDateType, sortByNameType, pageable);
+    Page<CertificateDto> certificateDtos =
+        certificateService.find(tagNames, name, pageable);
     certificateDtos.forEach(certificateHateoas::getLinks);
     return new ResponseEntity<>(certificateDtos, HttpStatus.OK);
   }

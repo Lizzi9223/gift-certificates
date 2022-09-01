@@ -1,6 +1,7 @@
 package com.epam.esm.controller.order;
 
 import com.epam.esm.dto.OrderDto;
+import com.epam.esm.dto.UserDto;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.utils.hateoas.OrderHateoas;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,10 +80,10 @@ public class OrderController {
   @PostMapping(value = "/user/{userId}")
   public ResponseEntity<Void> create(
       @RequestBody OrderDto orderDto, @PathVariable("userId") Long userId) {
-    //    UserDto userDto =
-    //        userService.find(SecurityContextHolder.getContext().getAuthentication().getName());
-    //    if (!userDto.getId().equals(userId))
-    //      throw new AccessDeniedException("Attempt to make an order for another user");
+        UserDto userDto =
+            userService.find(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!userDto.getId().equals(userId))
+          throw new AccessDeniedException("Attempt to make an order for another user");
     orderService.create(orderDto, userId);
     return new ResponseEntity<>(HttpStatus.OK);
   }

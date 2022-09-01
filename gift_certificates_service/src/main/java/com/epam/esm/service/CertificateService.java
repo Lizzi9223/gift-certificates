@@ -8,8 +8,6 @@ import com.epam.esm.exception.handling.CertificateExceptions;
 import com.epam.esm.mappers.CertificateMapper;
 import com.epam.esm.repos.CertificateRepository;
 import com.epam.esm.repos.TagRepository;
-import com.epam.esm.search.model.SearchCriteria;
-import com.epam.esm.search.validator.SearchCriteriaValidator;
 import com.epam.esm.validator.DtoValidator;
 import com.epam.esm.validator.group.CreateInfo;
 import com.epam.esm.validator.group.UpdateInfo;
@@ -20,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -156,28 +155,14 @@ public class CertificateService {
   /**
    * Searches for certificates by params
    *
-   * @param tagNames name of the tag certificates to contain
-   * @param certificateName part of certificate name
-   * @param certificateDescription part of certificate description
-   * @param sortByDateType sort by date ASC or DESC
-   * @param sortByNameType sort by name ASC or DESC
+   * @param tagNames names of the tags that certificates has to be attached to
+   * @param name substring that certificate has to contain in its name or description
    * @param pageable for pagination implementation
    * @return list of founded certificateDtos
    */
-  public List<CertificateDto> find(
-      String[] tagNames,
-      String certificateName,
-      String certificateDescription,
-      String sortByDateType,
-      String sortByNameType,
-      Pageable pageable) {
-    SearchCriteria criteria =
-        new SearchCriteria(
-            tagNames, certificateName, certificateDescription, sortByDateType, sortByNameType);
-    if (SearchCriteriaValidator.isValid(criteria)) {
-      List<Certificate> certificates = certificateRepository.findByCriteria(criteria, pageable);
-      return certificateMapper.convertToDto(certificates);
-    } else throw exceptionHandling.getInvalidSearchParamsException();
+  public Page<CertificateDto> find(String[] tagNames, String name, Pageable pageable) {
+    Page<Certificate> certificates = certificateRepository.findByParams(tagNames, name, pageable);
+    return certificates.map(certificateMapper::convertToDto);
   }
 
   /**
