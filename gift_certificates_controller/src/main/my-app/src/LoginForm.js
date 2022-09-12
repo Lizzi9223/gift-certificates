@@ -11,16 +11,11 @@ function LoginForm(props){
     const[usernameValid, setUsernameValid] = useState(false);
     const[passwordValid, setPasswordValid] = useState(false);
     const[formValid, setFormValid] = useState(false);
-    const [cookies, setCookie, removeCookie] = useCookies(["token","login","page"]);
+    const[cookies, setCookie, removeCookie] = useCookies(["token","login","page"]);
 
     useEffect(() => {
         validateForm();
     }, [usernameValid, passwordValid]);
-
-    useEffect(() => {
-        validateForm();
-    }, [usernameValid, passwordValid]);
-
 
   const handleUserInput = (e) => {
     const name = e.target.name;
@@ -64,7 +59,7 @@ function LoginForm(props){
         props.navigate('/certificates');        
       })
       .catch((error) => {
-        setErrorMessages({errorMessages : { name: "credentials", message: error.response.data.errorMessage }});
+        setErrorMessages({ name: "credentials", message: error.response.data.errorMessage });
       })
   }
 
