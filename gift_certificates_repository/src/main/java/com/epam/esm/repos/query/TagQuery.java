@@ -18,12 +18,12 @@ public final class TagQuery {
    */
   public static String getQueryToFindExistingTags(Set<Tag> tags) {
     StringBuilder findQuery = new StringBuilder();
-    findQuery.append("select * from tag where tag.name regexp '");
+    findQuery.append("select * from tag where tag.name in (");
     for (Tag tag : tags) {
-      findQuery.append(tag.getName()).append("|");
+      findQuery.append("'").append(tag.getName()).append("',");
     }
     findQuery.deleteCharAt(findQuery.length() - 1);
-    findQuery.append("'");
+    findQuery.append(")");
     return findQuery.toString();
   }
 }

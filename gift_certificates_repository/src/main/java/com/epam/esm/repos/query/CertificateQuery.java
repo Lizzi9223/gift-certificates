@@ -32,7 +32,7 @@ public final class CertificateQuery {
     boolean isWhereClauseAdded = false;
     boolean isOrderClauseAdded = false;
 
-    if (!Objects.isNull(tagNames)) {
+    if (Objects.nonNull(tagNames)) {
       findQuery.append(" where t.name regexp '");
       for (String tagName : tagNames) {
         findQuery.append(tagName).append("|");
@@ -44,16 +44,16 @@ public final class CertificateQuery {
 
     if (Objects.nonNull(name)) {
       if (!isWhereClauseAdded) {
-        findQuery.append(" where ");
+        findQuery.append(" where (");
         isWhereClauseAdded = true;
-      } else findQuery.append(" and");
+      } else findQuery.append(" and (");
       findQuery.append(" g.name like '%").append(name).append("%'");
     }
 
     if (Objects.nonNull(name)) {
       if (!isWhereClauseAdded) findQuery.append(" where ");
-      else findQuery.append(" and");
-      findQuery.append(" g.description like '%").append(name).append("%'");
+      else findQuery.append(" or");
+      findQuery.append(" g.description like '%").append(name).append("%')");
     }
 
     for (Sort.Order order : pageable.getSort()) {

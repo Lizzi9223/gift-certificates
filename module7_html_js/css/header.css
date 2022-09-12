@@ -1,0 +1,182 @@
+            .header{
+                height: 8%;
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                background-color: white;
+            }
+            
+            .header .logo{
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                height: 100%;
+                width: 25%;
+                margin-left: 5%;
+            }
+            
+            .header .logo img{
+                height: 70%;
+                width: 10%;
+                cursor: pointer;
+            }
+            
+            .header .logo div{
+                font-size: 18px;
+                cursor: pointer;
+            }
+            
+            
+
+            .header .search{
+                height: 100%;
+                width: 50%;
+            }
+
+            .header .search ul{
+                list-style: none;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .header .search ul li{
+                display: inline-block;
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .header .search ul li ul.dropdown{
+                width: 100%;
+                display: none;
+                position: absolute;
+                z-index: 999;
+                left: 0;
+                margin-top: 6em;  
+            }
+
+            .header .search ul li:hover ul.dropdown,
+            .header .search ul li:hover ul.dropdown:hover{
+                display: block;
+                font-size: 14px;
+            }
+
+            .header .search ul li ul.dropdown li{
+                display: block;
+                padding: .7em;
+                text-align: left;
+                background-color: white;
+                cursor: pointer;
+                padding-left: 1.5em;
+                border-bottom: 1px solid #A9A9A9; 
+            }
+
+            .header .search ul li ul.dropdown li:first-child{
+                border: 0;
+            }
+
+            .header .search ul li ul.dropdown li:last-child{
+                border-bottom: 0;
+            }
+            
+            .header .search .search-input, 
+            .header .search .dropdown-title{                
+                font-size: 14px;
+                float: left;
+                padding: .8em;
+                margin: 0em;
+                border: 1px solid #A9A9A9;                
+            }
+
+            .header .search .search-input{
+                width: 25em;
+                border-right: 0;
+            }
+
+            .header .search .dropdown-title{
+                width: 10em;
+                cursor: pointer;
+            }
+            
+            .header .search .search-input::placeholder{
+                color: #A9A9A9;                
+            }
+
+            .header .search ul li ul.dropdown li:hover{
+                background-color: #A9A9A9;
+            }
+
+            .header .search .search-input:hover,
+            .header .search .dropdown-title:hover{
+                background-color: rgb(220, 220, 220, 0.7);
+            }
+
+            .header .search .dropdown-title img{
+                transition: all 0.3s ease-in-out 0s;
+            }
+
+            .header .search ul li ul.dropdown li#li-dropdown-input{
+                padding: 1em 0.3em;
+                display: flex;
+                justify-items: center;
+                align-items: center;                
+            }
+
+            .header .search ul li ul.dropdown li#li-dropdown-input:hover{
+                background-color: white;
+            }
+
+            .header .search ul li ul.dropdown li #dropdown-input{
+                border: 1px solid #A9A9A9; 
+                float: left;
+                width: 9em;
+                height: 2em;
+                padding-left: 1em;
+            }
+
+            .header .search ul li ul.dropdown li#li-dropdown-input img{
+                float: left;
+                margin-left: .2em;
+            }
+
+
+
+            .header .buttons{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                height: 100%;
+                width: 15%;
+                padding: 0 5%;
+            }
+            
+            .header .buttons img{
+                height: 50%;
+                cursor: pointer;
+                padding: 2%;
+            }
+
+            .header .buttons div{
+                cursor: pointer;
+                padding: 3%;
+            }
+
+            .header .buttons img:hover, 
+            .header .buttons div:hover{
+                background-color: rgb(220, 220, 220, 0.7);
+            }
+
+
+
+
+
+
+
+
+

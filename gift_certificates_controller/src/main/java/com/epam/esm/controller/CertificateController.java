@@ -88,7 +88,7 @@ public class CertificateController {
    *     the provided params
    */
   @GetMapping
-  public ResponseEntity<Page<CertificateDto>> findByName(
+  public ResponseEntity<Page<CertificateDto>> findByParams(
       @RequestParam(required = false, name = "tagNames") String[] tagNames,
       @RequestParam(required = false, name = "name") String name,
       Pageable pageable) {
@@ -102,14 +102,14 @@ public class CertificateController {
   }
 
   /**
-   * Searches for certificate with provided name
+   * Searches for certificate with provided id
    *
-   * @param name name of the certificate to find
+   * @param id id of the certificate to find
    * @return ResponseEntity containing http status and founded certificate
    */
-  @GetMapping(value = "/{name}")
-  public ResponseEntity<CertificateDto> findByName(@PathVariable("name") String name) {
-    CertificateDto certificateDto = certificateService.find(name);
+  @GetMapping(value = "/{id}")
+  public ResponseEntity<CertificateDto> findById(@PathVariable("id") Long id) {
+    CertificateDto certificateDto = certificateService.find(id);
     certificateHateoas.getLinks(certificateDto);
     return new ResponseEntity<>(certificateDto, HttpStatus.OK);
   }

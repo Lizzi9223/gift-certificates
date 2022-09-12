@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<HTML>
+    <HEAD>
+        <title>Сheckout</title>
+        
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/header.css">
+        
+        <style>
+            
+            html{
+                overflow-y: scroll;
+            }
+            
+            html, body, .page{
+                position: absolute; 
+                background-color: white;                 
+            }
+            
+            #wrapper{                
+                height: 100%;
+                width: 100%;
+                border: none;
+                display: flex;
+                flex-direction: column;                
+            }
+            
+            #form-header{                
+                background-color: #A9A9A9;
+                color: white;
+                font-size: 22px;
+                display: flex;
+                align-items: center;
+                padding: 1.5%;
+                padding-left: 20%;
+            }
+            
+            #wrapper form{
+                width: 100%;
+                min-height: 90%;
+            }
+            
+            .coupon{
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                margin: 0 15%;
+                margin-top: 2%;
+            }
+            
+            #wrapper form > :first-child{
+                margin-top: 4%;
+            }
+            
+            .coupon .square{
+                height: 150px;
+                width: 150px;
+                background-color: #D3D3D3;
+                margin-left: 7%;
+            }
+            
+            .coupon .info{
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+            }
+            
+            .coupon .info .coupon-name{
+                font-size: 22px;
+                font-weight: bold;
+                margin-bottom: 7%;
+            }
+            
+            .coupon .info .coupon-description{
+                max-width: 550px;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            
+            .coupon .price, #total-title, #total-value{
+                font-size: 22px;
+            }
+            
+            hr{
+                margin-top: 2%;
+                margin-bottom: 3%;
+                max-width: 80%;
+            }
+            
+            #total{
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                margin: 0 15%;                
+                font-weight: bold;
+            }
+            
+            #total-title{
+                margin-right: 7%;
+            }
+            
+            #buttons{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                margin: 4% 10%; 
+                margin-bottom: 15%;
+            }
+            
+            #buttons button{
+                margin-right: 4%;
+                border: 1px solid #696969;
+                background-color: white;
+                color: #696969;
+                font-size: 16px;
+                font-weight: bold;
+                height: 45px;
+                width: 14%;
+                cursor: pointer;
+            }
+            
+            #buttons input{
+                border: none;
+                background-color: #00FA9A;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                height: 45px;
+                width: 14%;
+                cursor: pointer;
+            } 
+            
+        </style>
+        
+    </HEAD>
+    <BODY>
+        <div class="page">
+            <div class="header">
+                <div class="logo">
+                    <img src="images/list.png" />
+                    <div>Logo</div>
+                </div>
+                <div class="search">
+                    <ul>
+                        <li><input class="search-input" onkeydown="searchByName()" type="text" name="search" placeholder="Search by item name"/></li>
+                        <li>
+                            <div class="dropdown-title" onclick="findByTag()" onmouseover="rotateImage()" onmouseout="rotateImageBack()">
+                                All categories&nbsp;&nbsp;
+                                <img style="height: 10px" src="images/expand_more_search.png">
+                            </div>
+                            <ul class="dropdown" onmouseover="rotateImage()" onmouseout="rotateImageBack()">
+                                <li id="li-dropdown-input">
+                                    <input id="dropdown-input" onkeydown="searchByTag()" type="text" placeholder="Search by tag..."/>
+                                    <img style="height: 15px" src="images/search.png">
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="buttons">
+                    <img src="images/favourite.svg" />
+                    <img src="images/shopping_cart.png" />
+                    <div>Login</div>
+                    <span>&nbsp;|&nbsp;</span>
+                    <div>Sign up</div>
+                </div>
+            </div>
+            <div class="body">                
+                <div id="wrapper">
+                    <div id="form-header">Checkout</div>
+                    <form>
+                        <div class="coupon">
+                            <div class="square"></div>
+                            <div class="info">
+                                <div class="coupon-name">
+                                    Coupon Name
+                                </div>
+                                <div class="coupon-description">
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.                                    
+                                </div>
+                            </div>
+                            <div class="price">$120</div>
+                        </div>
+                        <div class="coupon">
+                            <div class="square"></div>
+                            <div class="info">
+                                <div class="coupon-name">
+                                    Coupon Name
+                                </div>
+                                <div class="coupon-description">
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.                                    
+                                </div>
+                            </div>
+                            <div class="price">$200</div>
+                        </div>
+                        <div class="coupon">
+                            <div class="square"></div>
+                            <div class="info">
+                                <div class="coupon-name">
+                                    Coupon Name
+                                </div>
+                                <div class="coupon-description">
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.
+                                    Laalalal lalal, lallalala. Lalalala lalalal llalalal. Lalalalal lalalala, lalllala lalalla.                                    
+                                </div>
+                            </div>
+                            <div class="price">$40</div>
+                        </div>
+                        <hr>
+                        <div id="total">
+                            <div id="total-title">Total</div>
+                            <div id="total-value">$360</div>
+                        </div>
+                        <div id="buttons">
+                            <button>Back</button>
+                            <input type="submit" value="Checkout" name="checkout" />
+                        </div>
+                        <br>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        
+        <script src="js/Header.js"></script>
+        
+    </BODY>
+</HTML>

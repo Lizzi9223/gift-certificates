@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<HTML>
+    <HEAD>
+        <title>Add new coupon</title>
+        
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/header.css">
+        
+        <style>
+            
+            #new-coupon-form{
+                background-color: white;
+                height: 100%;
+                width: 100%;
+                border: none;
+                display: flex;
+                flex-direction: column;                
+            }
+            
+            #form-header{
+                height: 10%;
+                background-color: #A9A9A9;
+                color: white;
+                font-size: 22px;
+                display: flex;
+                align-items: center;
+                padding-left: 20%;
+            }
+            
+            #new-coupon-form form{
+                height: 88%;
+                width: 100%;
+            }
+            
+            #new-coupon-form .inputs{
+                height: 75%;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center; 
+            }            
+            
+            #new-coupon-form table{
+                height: 100%;
+                width: 65%;
+                margin-top: 1%;
+            }
+            
+            #new-coupon-form table td{
+                width: 50%;
+            }
+            
+            #new-coupon-form td input[type="text"],              
+            #new-coupon-form td textarea{                
+                border: 1px solid #DCDCDC;
+                margin-left: 7%;
+                margin-top: 1%;
+                height: 40%;
+                width: 80%;
+            }
+            
+            #new-coupon-form select{
+                font-size: 15px;
+                background: url(images/expand_more.png) no-repeat right white;
+                -webkit-appearance: none;                
+                background-position-x: 100%;  
+                padding: 1% 0;
+                padding-left: 5%;
+                font-weight: bold;
+                color: #A9A9A9;  
+                border: 1px solid #DCDCDC;
+                margin-left: 7%;
+                margin-top: 1%;
+                height: 40%;
+                width: 81.5%;
+            }
+            
+            #new-coupon-form input[type="datetime-local"]{
+                font-size: 15px;
+                font-weight: bold;
+                font-family: sans-serif;
+                padding-left: 5%;
+                padding-right: 2%;
+                margin-right: 10%;
+                width: 74%;
+                color: #A9A9A9;                
+                border: 1px solid #DCDCDC;
+                margin-left: 7%;
+                margin-top: 1%;
+                height: 40%;
+            }
+            
+            #new-coupon-form input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+                background: url(images/event.png) no-repeat;
+            }
+            
+            #new-coupon-form td label{
+                margin-left: 7%;                
+                font-size: 14px;
+                color: #696969;
+            }             
+            
+            #new-coupon-form td .image{
+                display: flex;
+                flex-direction: row;
+                border: 1px solid #DCDCDC;
+                margin-left: 7%;
+                margin-top: 1%;
+                height: 40%;
+                width: 81%;
+            }
+            
+            .input-file {
+                width: 100%;
+                position: relative;
+                display: inline-block;
+            }
+            
+            .input-file-text {
+                line-height: 40px;
+                text-align: left;
+                height: 100%;
+                width: 60%;
+                float: left;
+            }
+            
+            .input-file-btn {  
+                cursor: pointer;
+                float: left;
+                margin-top: 3%;
+                margin-left: 32%;
+            }
+            
+            .input-file input[type=file] {
+                position: absolute;
+                z-index: -1;
+                opacity: 0;
+                display: block;
+                width: 0;
+                height: 0;
+            }
+            
+            
+            #new-coupon-form .buttons{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                height: 15%;
+                margin-right: 18%;
+            }
+            
+            #new-coupon-form .buttons button{
+                margin-right: 4%;
+                border: 1px solid #696969;
+                background-color: white;
+                color: #696969;
+                font-size: 16px;
+                font-weight: bold;
+                height: 45%;
+                width: 12%;
+                cursor: pointer;
+            }
+            
+            #new-coupon-form .buttons input{
+                margin-right: 4%;
+                border: none;
+                background-color: #00FA9A;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                height: 45%;
+                width: 12%;
+                cursor: pointer;
+            }            
+            
+        </style>
+        
+        
+        
+    </HEAD>
+    <BODY>
+        <div class="page">
+            <div class="header">
+                <div class="logo">
+                    <img src="images/list.png" />
+                    <div>Logo</div>
+                </div>
+                <div class="search">
+                    <ul>
+                        <li><input class="search-input" onkeydown="searchByName()" type="text" name="search" placeholder="Search by item name"/></li>
+                        <li>
+                            <div class="dropdown-title" onclick="findByTag()" onmouseover="rotateImage()" onmouseout="rotateImageBack()">
+                                All categories&nbsp;&nbsp;
+                                <img style="height: 10px" src="images/expand_more_search.png">
+                            </div>
+                            <ul class="dropdown" onmouseover="rotateImage()" onmouseout="rotateImageBack()">
+                                <li id="li-dropdown-input">
+                                    <input id="dropdown-input" onkeydown="searchByTag()" type="text" placeholder="Search by tag..."/>
+                                    <img style="height: 15px" src="images/search.png">
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="buttons">
+                    <img src="images/favourite.svg" />
+                    <img src="images/shopping_cart.png" />
+                    <div>Login</div>
+                    <span>&nbsp;|&nbsp;</span>
+                    <div>Sign up</div>
+                </div>
+            </div>
+            <div class="body">                
+                <div id="new-coupon-form">
+                    <div id="form-header">Add New Coupon</div>
+                    <form enctype="multipart/form-data">
+                        <div class="inputs">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label>Company</label>
+                                        <input type="text" name="company"/>
+                                    </td>
+                                    <td>
+                                        <label>Item Name</label>
+                                        <input type="text" name="itemName"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Category</label>
+                                        <select name="category">
+                                            <option disabled selected>Category Name</option>
+                                        </select>
+                                    </td>
+                                    <td rowspan="2" style="padding-top: 1%">
+                                        <label>Short description</label>
+                                        <textarea style="resize:none; height: 72%;" name="shortDescription"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Valid to</label>
+                                        <input type="datetime-local" value="2020-12-12T02:00" name="validTo"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Price</label>
+                                        <input type="text" name="price"/>
+                                    </td>
+                                    <td rowspan="2">
+                                        <label>Long description</label>
+                                        <textarea style="resize:none; height: 71%; margin-bottom: 2%" name="longDescription"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Images</label>
+                                        <div class="image">
+                                            <label class="input-file">
+                                                <span class="input-file-text" type="text"></span>
+                                                <input type="file" name="file" />        
+                                                <span class="input-file-btn"><img src="images/photo.png" /></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="buttons">
+                            <button>Back</button>
+                            <input type="submit" value="Save" name="save" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        
+        <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+        <script>
+
+            $( document ).ready(function() {
+                $('.input-file input[type=file]').on('change', function(){
+                    let file = this.files[0];
+                    $(this).closest('.input-file').find('.input-file-text').html(file.name);
+                });
+            });
+
+        </script>
+        <script src="js/Header.js"></script>
+        
+        
+    </BODY>
+</HTML>

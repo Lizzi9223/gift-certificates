@@ -23,13 +23,13 @@ public class CertificateHateoas {
    */
   public void getLinks(CertificateDto certificateDto) {
     certificateDto.add(
-        linkTo(methodOn(CertificateController.class).findByName(certificateDto.getName()))
+        linkTo(methodOn(CertificateController.class).findById(certificateDto.getId()))
             .withSelfRel());
     certificateDto.add(
         linkTo(methodOn(CertificateController.class).update(certificateDto, certificateDto.getId()))
             .withRel("update"));
     certificateDto.add(
-        linkTo(methodOn(CertificateController.class).delete((long)certificateDto.getId()))
+        linkTo(methodOn(CertificateController.class).delete(certificateDto.getId()))
             .withRel("delete"));
   }
 }

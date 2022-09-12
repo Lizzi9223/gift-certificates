@@ -97,7 +97,8 @@ public class CertificateService {
     Optional<Certificate> initialCert = certificateRepository.findById(certificate.getId());
     if (initialCert.isEmpty())
       throw exceptionHandling.getExceptionForCertificateIdNotExist(certificate.getId());
-    if (Objects.isNull(certificate.getName())) certificate.setName(initialCert.get().getName());
+    if (Objects.isNull(certificate.getName()) || initialCert.get().getName().equals(certificate.getName()))
+      certificate.setName(initialCert.get().getName());
     if (Objects.isNull(certificate.getDescription()))
       certificate.setDescription(initialCert.get().getDescription());
     if (Objects.isNull(certificate.getPrice())) certificate.setPrice(initialCert.get().getPrice());
@@ -106,9 +107,9 @@ public class CertificateService {
       certificate.setCreateDate(initialCert.get().getCreateDate());
     if (Objects.isNull(certificate.getLastUpdateDate()))
       certificate.setLastUpdateDate(LocalDateTime.now());
-    if (Objects.nonNull(initialCert.get().getTags())) {
-      initialCert.get().getTags().forEach(tag -> certificate.getTags().add(tag));
-    }
+//    if (Objects.nonNull(initialCert.get().getTags())) {
+//      initialCert.get().getTags().forEach(tag -> certificate.getTags().add(tag));
+//    }
   }
 
   /**
@@ -148,7 +149,12 @@ public class CertificateService {
    */
   public void delete(Long id) {
     Optional<Certificate> certificate = certificateRepository.findById(id);
-    if (certificate.isPresent()) certificateRepository.delete(certificate.get());
+    if (certificate.isPresent()) {
+      certificate.get().setTags(null);
+      certificateRepository.save(certificate.get());
+      Optional<Certificate> certificate_ = certificateRepository.findById(id);
+      certificateRepository.delete(certificate.get());
+    }
     else throw exceptionHandling.getExceptionForCertificateIdNotExist(id);
   }
 
@@ -176,5 +182,18 @@ public class CertificateService {
     Optional<Certificate> certificate = certificateRepository.findByName(name);
     if (certificate.isPresent()) return certificateMapper.convertToDto(certificate.get());
     else throw exceptionHandling.getExceptionForCertificateNameNotExist(name);
+  }
+
+  /**
+   * Searches for certificate by id
+   *
+   * @param id id of the certificate to find
+   * @return founded certificateDto
+   * @throws ServiceException if certificate with the provided id does not exist
+   */
+  public CertificateDto find(Long id) {
+    Optional<Certificate> certificate = certificateRepository.findById(id);
+    if (certificate.isPresent()) return certificateMapper.convertToDto(certificate.get());
+    else throw exceptionHandling.getExceptionForCertificateIdNotExist(id);
   }
 }

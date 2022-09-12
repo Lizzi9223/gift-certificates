@@ -1,0 +1,67 @@
+
+<html>
+    <head>
+        <link rel="stylesheet" href="./css/index.css">
+        <link rel="stylesheet" href="./css/Navbar.css">
+        <link rel="stylesheet" href="./css/Footer.css">
+    </head>
+    <body>
+        <header>
+            <nav class="navbar">
+                <div class="left">
+                    <a href="#">Admin UI</a> 
+                    <button class="buttons">Add new</button>
+                </div>
+                <div class="right">
+                    <button class="square"><img src="#"/></button>
+                    <button>User Login</button>
+                    <button>Logout</button>
+                </div>                
+            </nav>
+        </header>
+        <div class="app">
+
+            <div class="error-message">
+
+            </div>
+
+            <div class="search">
+
+            </div>
+
+            <div class="certificate-table">
+                <table>
+                    <thead>
+                        <th>Datetime</th>
+                        <th>Title</th>
+                        <th>Tags</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody>
+                        {certifiates.length===0 ?
+                            <tr align="center"><td colSpan="5">No Record Found</td></tr>:
+                            books.map(
+                                (books,index) =>(
+                                    
+                                    <tr key = {books.id}>
+                                            <td>{(recordPerPage*(currentPage-1))+index+1}</td>
+                                            <td>{books.bookName}</td>
+                                            <td>{books.authorName}</td>
+                                            <td>{books.price}</td>
+                                        
+                                    </tr>
+                                )
+                            )
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <footer>
+            <p>2022, EPAM Student</p>
+        </footer>
+    </body>
+</html>
